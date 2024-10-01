@@ -1,0 +1,19 @@
+{
+	"name":        "payment/payment-core",
+	"description": "Payment core library for imoje, contains basic functions to implement Payment Method",
+	"type":        "library",
+	"version":     "2.1.2",
+	"require":     {
+		"justinrainbow/json-schema": "^5.2",
+		"ext-curl":                  "*",
+		"ext-json":                  "*",
+		"php":                       ">=5.6.0",
+		"ext-zlib":                  "*"
+	},
+	"license":     "MIT",
+	"autoload":    {
+		"psr-4": {
+			"Imoje\\Payment\\": "src"
+		}
+	}
+}
