@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2024-05-23 12:13+0200\n"
-"PO-Revision-Date: 2024-05-23 12:13+0200\n"
+"POT-Creation-Date: 2024-11-04 13:39+0100\n"
+"PO-Revision-Date: 2024-11-04 13:39+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pl_PL\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.2\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;esc_html__;esc_html_e\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -57,7 +57,7 @@ msgid "below"
 msgstr "poniżej"
 
 #: includes/gateway/WC_Gateway_ImojeBlik.php:46
-#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:367
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:368
 msgid "Payment error. Contact with shop administrator."
 msgstr "Spróbuj ponownie później lub skontaktuj się z obsługą sklepu."
 
@@ -142,25 +142,34 @@ msgstr "Visa Mobile"
 msgid "Visa Mobile payment with imoje "
 msgstr "Płać Visa Mobile z imoje"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:179
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:132
+msgid "imoje - installments"
+msgstr "imoje - raty"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:133
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:134
+msgid "imoje installments"
+msgstr "imoje raty"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:185
 msgid "ING Lease Now"
 msgstr "ING Lease Now"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:182
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:228
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:253
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:188
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:234
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:259
 msgid "Enable"
 msgstr "Włącz"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:215
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:221
 msgid "Sandbox is enabled"
 msgstr "Tryb sandbox jest włączony"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:220
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:226
 msgid "Hint"
 msgstr "Wskazówka"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:223
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:229
 msgid ""
 "The module requires a configuration in the imoje administration panel. <br/> "
 "Go to imoje.ing.pl and log in to the administration panel. <br/> Go to "
@@ -174,79 +183,79 @@ msgstr ""
 "skopiuj klucze konfiguracyjne. <br/> Skopiowane klucze wprowadź w pola "
 "opisane poniżej."
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:226
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:232
 msgid "Enable / Disable"
 msgstr "Włącz / Wyłącz"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:232
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:238
 msgid "Debug mode"
 msgstr "Tryb debugowania"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:234
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:240
 msgid "Enable debug mode"
 msgstr "Włącz tryb debugowania"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:238
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:244
 msgid "Sandbox"
 msgstr "Tryb sandbox"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:241
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:247
 msgid "Enable sandbox"
 msgstr "Włącz tryb sandbox"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:244
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:250
 msgid "Display brand"
 msgstr "Wyświetlanie loga"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:247
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:253
 msgid "Hide brand"
 msgstr "Ukryj logo"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:250
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:256
 msgid "ING Księgowość"
 msgstr "ING Księgowość"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:256
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:262
 msgid "Payment title"
 msgstr "Nazwa metody płatności"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:261
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:267
 msgid "Description"
 msgstr "Opis"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:263
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:269
 msgid "Text that users will see on checkout"
 msgstr "Ten tekst zobaczą użytkownicy na podsumowaniu zamówienia"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:268
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:274
 msgid "Merchant ID"
 msgstr "Identyfikator klienta"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:273
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:279
 msgid "Service ID"
 msgstr "Identyfikator sklepu"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:278
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:284
 msgid "Service Key"
 msgstr "Klucz sklepu"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:283
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:289
 msgid "Authorization token"
 msgstr "Token autoryzacyjny"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:288
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:294
 msgid "Currency"
 msgstr "Waluta"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:294
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:300
 msgid "Meta name for VAT"
 msgstr "Nazwa meta dla pola NIP"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:318
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:324
 msgid "Refund amount must be higher than 0"
 msgstr "Kwota zwrotu musi być większa od 0"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:403
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:409
 msgid "You must insert exactly 6 numbers as BLIK code!"
 msgstr "Musisz wprowadzić dokładnie 6 cyfr jako kod BLIK!"
 
@@ -258,7 +267,7 @@ msgstr "Zła odpowiedź z API, błędy:"
 msgid "Service is inactive in imoje"
 msgstr "Sklep jest nieaktywny w imoje"
 
-#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:272
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:273
 msgid "No payment channel available. Choose another payment method."
 msgstr "Brak dostępnego kanału płatności. Wybierz inną metodę płatności."
 
@@ -320,101 +329,101 @@ msgstr ""
 msgid "Payment method is unavailable, please select another one."
 msgstr "Metoda płatności jest niedostępna, wybierz inną."
 
-#: woocommerce-imoje.php:225
+#: woocommerce-imoje.php:226
 msgid "Transaction could not be initialized, error: "
 msgstr "Transakcja nie mogła zostać zainicjowana, błędy: "
 
-#: woocommerce-imoje.php:402
+#: woocommerce-imoje.php:403
 msgid "Insert BLIK code."
 msgstr "Wprowadź kod BLIK."
 
-#: woocommerce-imoje.php:403
+#: woocommerce-imoje.php:404
 msgid "Please try again."
 msgstr "Proszę spróbować ponownie."
 
-#: woocommerce-imoje.php:407 woocommerce-imoje.php:466
+#: woocommerce-imoje.php:408 woocommerce-imoje.php:467
 msgid "Payment failed."
 msgstr "Płatność nieudana."
 
-#: woocommerce-imoje.php:409
+#: woocommerce-imoje.php:410
 msgid ""
 "Technical break in your bank. Pay later or use another bank's application."
 msgstr ""
 "Przerwa techniczna w Twoim banku. Zapłać później lub skorzystaj z aplikacji "
 "innego banku."
 
-#: woocommerce-imoje.php:411
+#: woocommerce-imoje.php:412
 msgid "Alias not found. To proceed the payment you need to pay with BLIK code."
 msgstr ""
 "Alias nie został znaleziony. Aby kontynuować płatność należy zapłacić kodem "
 "BLIK."
 
-#: woocommerce-imoje.php:414
+#: woocommerce-imoje.php:415
 msgid "Alias declined. To proceed the payment you need to pay with BLIK code."
 msgstr ""
 "Alias został odrzucony. Aby kontynuować płatność należy zapłacić kodem BLIK."
 
-#: woocommerce-imoje.php:416
+#: woocommerce-imoje.php:417
 msgid "You have entered wrong BLIK code."
 msgstr "Wprowadziłeś błędny kod BLIK."
 
-#: woocommerce-imoje.php:419
+#: woocommerce-imoje.php:420
 msgid "BLIK code expired."
 msgstr "Kod BLIK stracił ważność."
 
-#: woocommerce-imoje.php:423
+#: woocommerce-imoje.php:424
 msgid "Something went wrong with BLIK code."
 msgstr "Coś poszło nie tak z kodem BLIK."
 
-#: woocommerce-imoje.php:426
+#: woocommerce-imoje.php:427
 msgid "Payment declined at the banking application."
 msgstr "Płatność została odrzucona w aplikacji bankowej."
 
-#: woocommerce-imoje.php:430
+#: woocommerce-imoje.php:431
 msgid "Payment failed - not confirmed on time in the banking application."
 msgstr ""
 "Płatność nie powiodła się - nie potwierdzono na czas w aplikacji bankowej."
 
-#: woocommerce-imoje.php:433
+#: woocommerce-imoje.php:434
 msgid "Inserted wrong PIN code in banking application."
 msgstr "Wprowadzono błędny kod PIN w aplikacji bankowej."
 
-#: woocommerce-imoje.php:436
+#: woocommerce-imoje.php:437
 msgid "Payment failed (security)."
 msgstr "Płatność nie powiodła się (bezpieczeństwo)."
 
-#: woocommerce-imoje.php:439
+#: woocommerce-imoje.php:440
 msgid "Limit exceeded in your banking application."
 msgstr "Przekroczono limit w Twojej aplikacji bankowej."
 
-#: woocommerce-imoje.php:442
+#: woocommerce-imoje.php:443
 msgid "Insufficient funds in your bank account."
 msgstr "Niewystarczające środki na Twoim koncie bankowym."
 
-#: woocommerce-imoje.php:445
+#: woocommerce-imoje.php:446
 msgid "Issuer declined."
 msgstr "Odmowa issuera."
 
-#: woocommerce-imoje.php:448
+#: woocommerce-imoje.php:449
 msgid "Transaction not found."
 msgstr "Transakcja nie została znaleziona."
 
-#: woocommerce-imoje.php:451
+#: woocommerce-imoje.php:452
 msgid "Bad IBAN."
 msgstr "Zły IBAN."
 
-#: woocommerce-imoje.php:454
+#: woocommerce-imoje.php:455
 msgid "Transfer not possible."
 msgstr "Transfer nie jest możliwy."
 
-#: woocommerce-imoje.php:457
+#: woocommerce-imoje.php:458
 msgid "Return late."
 msgstr "Zwrot za późno."
 
-#: woocommerce-imoje.php:460
+#: woocommerce-imoje.php:461
 msgid "Return amount exceeded."
 msgstr "Przekroczona kwota zwrotu."
 
-#: woocommerce-imoje.php:463
+#: woocommerce-imoje.php:464
 msgid "Transfer late."
 msgstr "Transfer za późno."

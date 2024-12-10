@@ -13,7 +13,8 @@
     window.addEventListener('message', function (data) {
         if (data.data?.channel && data.data.period) {
             imoje_is_passed_installments = true;
-            $('#imoje-selected-channel').val(imoje_installments_payment_method + '-' + data.data.channel)
+
+            $('#imoje-selected-channel-installments').val(imoje_installments_payment_method + '-' + data.data.channel)
             $('#imoje-installments-period').val(data.data.period)
         }
     }, false);

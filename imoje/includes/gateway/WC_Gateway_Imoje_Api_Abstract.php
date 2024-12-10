@@ -376,10 +376,18 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 			return false;
 		}
 
+		// adjust it to installments
+		$formSelectedChannel = $_POST['imoje-selected-channel'];
+
+		if (static::PAYMENT_METHOD_NAME == WC_Gateway_ImojeInstallments::PAYMENT_METHOD_NAME){
+			$formSelectedChannel = $_POST['imoje-selected-channel-installments'];
+
+		}
+
 		$post_imoje_selected_channel = '';
 
-		if ( isset( $_POST['imoje-selected-channel'] ) && $_POST['imoje-selected-channel'] ) {
-			$post_imoje_selected_channel = sanitize_text_field( $_POST['imoje-selected-channel'] );
+		if ( isset( $formSelectedChannel ) && $formSelectedChannel ) {
+			$post_imoje_selected_channel = sanitize_text_field( $formSelectedChannel );
 		}
 
 		$post_selected_channel = explode( '-', $post_imoje_selected_channel );

@@ -35,7 +35,7 @@ class WC_Gateway_ImojePaylater extends WC_Gateway_Imoje_Api_Abstract {
 			$order->get_billing_first_name(),
 			$order->get_billing_last_name(),
 			$order->get_billing_email(),
-			$this->get_notification_url(),
+			self::get_notification_url(),
 			Api::TRANSACTION_TYPE_SALE,
 			'',
 			'',

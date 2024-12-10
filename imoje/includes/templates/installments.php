@@ -15,6 +15,6 @@
 	>
 	</div>
 
-	<input name="imoje-selected-channel" id="imoje-selected-channel" hidden>
+	<input name="imoje-selected-channel-installments" id="imoje-selected-channel-installments" hidden>
 	<input name="imoje-installments-period" id="imoje-installments-period" hidden>
 </div>

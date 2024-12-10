@@ -171,7 +171,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 	/**
 	 * @return string
 	 */
-	protected function get_notification_url() {
+	public static function get_notification_url() {
 		return add_query_arg( 'wc-api', strtolower( static::class ), home_url( '/' ) );
 	}
 
