@@ -54,34 +54,29 @@ class WC_Gateway_ImojeInstallments extends WC_Gateway_Imoje_Api_Abstract {
 		parent::payment_fields();
 
 		if ( $this->render_calculator() ) {
-
 			$this->render_regulations();
 		}
 	}
 
 	/**
-	 * @return bool
+	 *
+	 * @return Installments
 	 */
-	private function render_calculator() {
-
-		global $wp_query;
-
-		$this->imoje_service = $this->get_service_active();
-
-		if ( ! $this->imoje_service ) {
-			$this->render_unavailable_template();
-
-			return false;
-		}
-
-		$installments = new Installments(
+	private function get_installments_instance() {
+		return new Installments(
 			$this->get_option( 'merchant_id' ),
 			$this->get_option( 'service_id' ),
 			$this->get_option( 'service_key' ),
-			$this->sandbox
-				? Util::ENVIRONMENT_SANDBOX
-				: Util::ENVIRONMENT_PRODUCTION
+			$this->sandbox ? Util::ENVIRONMENT_SANDBOX : Util::ENVIRONMENT_PRODUCTION
 		);
+	}
+
+	/**
+	 *
+	 * @return array
+	 */
+	private function fetch_installments_data() {
+		$installments = $this->get_installments_instance();
 
 		$installments_data = $installments->getData(
 			WC()->cart->get_cart_contents_total() + WC()->cart->get_cart_contents_tax(),
@@ -90,10 +85,35 @@ class WC_Gateway_ImojeInstallments extends WC_Gateway_Imoje_Api_Abstract {
 
 		$installments_data['url'] = $installments->getScriptUrl();
 
-		$wp_query->query_vars['installments_data'] = $installments_data;
+		return $installments_data;
+	}
+
+	/**
+	 *
+	 * @return bool
+	 */
+	private function render_calculator() {
+		global $wp_query;
+
+		$this->imoje_service = $this->get_service_active();
+
+		if ( ! $this->imoje_service ) {
+			$this->render_unavailable_template();
+			return false;
+		}
+
+		$wp_query->query_vars['installments_data'] = $this->fetch_installments_data();
 
 		load_template( dirname( __DIR__ ) . '/templates/installments.php', false );
 
 		return true;
+	}
+
+	/**
+	 *
+	 * @return array
+	 */
+	public function get_calculator_data() {
+		return $this->fetch_installments_data();
 	}
 }

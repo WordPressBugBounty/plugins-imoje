@@ -38,7 +38,6 @@ class WC_Gateway_ImojeBlik extends WC_Gateway_Imoje_Api_Abstract {
 	 * @return array|bool
 	 */
 	public function process_payment( $order_id ) {
-
 		if ( ! $this->blik0 ) {
 			return parent::process_payment( $order_id );
 		}
@@ -181,5 +180,13 @@ class WC_Gateway_ImojeBlik extends WC_Gateway_Imoje_Api_Abstract {
 
 			$this->render_regulations();
 		}
+	}
+
+	/**
+	 * @return array
+	 */
+	public function get_payment_channels()
+	{
+		return $this->prepare_payment_methods_block_checkout('blik');
 	}
 }

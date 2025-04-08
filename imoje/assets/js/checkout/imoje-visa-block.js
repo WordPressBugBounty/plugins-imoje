@@ -1,0 +1,37 @@
+function registerImojePaylaterPaymentMethod() {
+	const ImojeVisaPaymentElement = React.createElement(
+		'div',
+		{
+			class: imojePaymentMethodContainerClass,
+		}, React.createElement(
+			'div',
+			{
+				class: `${imojePaymentMethodContainerClass}__title`,
+
+			},
+			imoje_visa_js_object.settings_visa.description,
+		),
+	);
+
+	wc.wcBlocksRegistry.registerPaymentMethod({
+		name:           imoje_visa_js_object.name_visa,
+		label:          React.createElement(
+			'span',
+			{
+				class: imojeBlockCheckoutHeaderClass,
+			},
+			imoje_visa_js_object.settings_visa.title,
+			imoje_visa_js_object.logo_visa && !isEnabled(imoje_visa_js_object.settings_visa.hide_brand) &&
+			React.createElement('img', {
+				src: imoje_visa_js_object.logo_visa,
+				alt: imoje_visa_js_object.name_visa,
+			}),
+		),
+		ariaLabel:      imoje_visa_js_object.name_visa,
+		edit:           ImojeVisaPaymentElement,
+		content:        ImojeVisaPaymentElement,
+		canMakePayment: imojeCanMakePayment(imoje_visa_js_object.settings_visa),
+	});
+}
+
+registerImojePaylaterPaymentMethod();

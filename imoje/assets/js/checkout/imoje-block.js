@@ -1,0 +1,37 @@
+function registerImojePaymentMethod() {
+	const ImojePaymentElement = React.createElement(
+		'div',
+		{
+			class: imojePaymentMethodContainerClass,
+		},
+		React.createElement(
+			'div',
+			{
+				class: `${imojePaymentMethodContainerClass}__title`,
+			},
+			imoje_js_object.settings_imoje.description,
+		),
+	);
+
+	wc.wcBlocksRegistry.registerPaymentMethod({
+		name:           imoje_js_object.name_imoje,
+		label:          React.createElement(
+			'span',
+			{
+				class: imojeBlockCheckoutHeaderClass,
+			},
+			imoje_js_object.settings_imoje.title,
+			imoje_js_object.logo_imoje && !isEnabled(imoje_js_object.settings_imoje.hide_brand) &&
+			React.createElement('img', {
+				src: imoje_js_object.logo_imoje,
+				alt: imoje_js_object.name_imoje,
+			}),
+		),
+		ariaLabel:      imoje_js_object.name_imoje,
+		edit:           ImojePaymentElement,
+		content:        ImojePaymentElement,
+		canMakePayment: imojeCanMakePayment(imoje_js_object.settings_imoje),
+	});
+}
+
+registerImojePaymentMethod();

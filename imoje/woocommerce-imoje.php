@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce imoje
 Plugin URI: https://imoje.pl
 Description: Add payment via imoje to WooCommerce
-Version: 4.7.2
+Version: 4.8.0
 Author: imoje <kontakt.tech@imoje.pl>
 Author URI: https://imoje.pl
 Text Domain: imoje
@@ -11,6 +11,7 @@ Text Domain: imoje
 
 use Imoje\Payment\Api;
 use Imoje\Payment\Util;
+use Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils;
 
 const WOOCOMMERCE_IMOJE_PLUGIN_DIR = __FILE__;
 define( 'WOOCOMMERCE_IMOJE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -34,12 +35,28 @@ function imoje_init_woocommerce_gateway() {
 
 	require_once( 'includes/gateway/WC_Gateway_Imoje_Abstract.php' );
 	require_once( 'includes/gateway/WC_Gateway_Imoje_Api_Abstract.php' );
+	require_once('includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php');
 
 	foreach ( imoje_get_gateways() as $method ) {
 		require_once( sprintf( 'includes/gateway/%s.php', $method ) );
 	}
 
+	add_action( 'before_woocommerce_init', function() {
+		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', __FILE__, true );
+		}
+	} );
+
 	add_filter( 'woocommerce_payment_gateways', 'imoje_add_gateways' );
+
+	if (CartCheckoutUtils::is_checkout_block_default() ) {
+		add_action('woocommerce_blocks_payment_method_type_registration', function($payment_method_registry) {
+				$payment_method_registry->register(new WC_Gateway_Imoje_RestApi_Blocks());
+		});
+	}
+
+
+
 }
 
 /**
