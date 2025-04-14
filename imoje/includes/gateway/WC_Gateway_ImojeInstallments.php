@@ -76,10 +76,25 @@ class WC_Gateway_ImojeInstallments extends WC_Gateway_Imoje_Api_Abstract {
 	 * @return array
 	 */
 	private function fetch_installments_data() {
+
+		$total = WC()->cart->get_cart_contents_total() + WC()->cart->get_cart_contents_tax();
+
+		if ( ! $total ) {
+
+			$order_key = isset( $_GET['key'] )
+				? wc_clean( wp_unslash( $_GET['key'] ) )
+				: '';
+			$order     = wc_get_order( absint( get_query_var( 'order-pay' ) ) );
+
+			if ( $order && $order->get_order_key() === $order_key ) {
+				$total = $order->get_total();
+			}
+		}
+
 		$installments = $this->get_installments_instance();
 
 		$installments_data = $installments->getData(
-			WC()->cart->get_cart_contents_total() + WC()->cart->get_cart_contents_tax(),
+			$total,
 			get_woocommerce_currency()
 		);
 

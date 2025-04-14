@@ -216,7 +216,25 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 			return false;
 		}
 
-		$cart_total = WC()->cart->get_cart_contents_total() + WC()->cart->get_cart_contents_tax();
+		$total = WC()->cart->get_cart_contents_total() + WC()->cart->get_cart_contents_tax();
+
+		if ( ! $total ) {
+
+			$order_key = isset( $_GET['key'] )
+				? wc_clean( wp_unslash( $_GET['key'] ) )
+				: '';
+			$order     = wc_get_order( absint( get_query_var( 'order-pay' ) ) );
+
+			if ( $order && $order->get_order_key() === $order_key ) {
+				$total = $order->get_total();
+			} else {
+				$this->render_unavailable_template(
+					__( 'No payment channel available. Choose another payment method.' )
+				);
+
+				return false;
+			}
+		}
 
 		$pm_blik = Util::getPaymentMethod( 'blik' );
 
@@ -228,11 +246,11 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 				if ( $payment_method['paymentMethod'] === $pm_blik
 				     && ! $this->imoje_api->verifyTransactionLimits(
 						$payment_method['transactionLimits'],
-						$cart_total ) ) {
+						$total ) ) {
 
 					$this->render_unavailable_template(
 						Helper::get_tooltip_payment_channel(
-							$this->get_payment_channel_to_array( $payment_method, $cart_total )
+							$this->get_payment_channel_to_array( $payment_method, $total )
 						) );
 
 					return false;
@@ -257,15 +275,14 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 				continue;
 			}
 
-			if ( $this->imoje_api->verifyTransactionLimits( $payment_method['transactionLimits'], $cart_total ) ) {
+			if ( $this->imoje_api->verifyTransactionLimits( $payment_method['transactionLimits'], $total ) ) {
 
-
-				$payment_method_list_online[] = $this->get_payment_channel_to_array( $payment_method, $cart_total );
+				$payment_method_list_online[] = $this->get_payment_channel_to_array( $payment_method, $total );
 
 				continue;
 			}
 
-			$payment_method_list_no_online[] = $this->get_payment_channel_to_array( $payment_method, $cart_total );
+			$payment_method_list_no_online[] = $this->get_payment_channel_to_array( $payment_method, $total );
 		}
 
 		if ( ! $payment_method_list_online && ! $payment_method_list_no_online ) {
@@ -356,7 +373,7 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 			}
 		}
 
-		if($add_currency) {
+		if ( $add_currency ) {
 			$array['currency'] = $payment_method['currency'];
 		}
 
@@ -383,9 +400,8 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 		// adjust it to installments
 		$formSelectedChannel = $_POST['imoje-selected-channel'];
 
-		if (static::PAYMENT_METHOD_NAME == WC_Gateway_ImojeInstallments::PAYMENT_METHOD_NAME){
+		if ( static::PAYMENT_METHOD_NAME == WC_Gateway_ImojeInstallments::PAYMENT_METHOD_NAME ) {
 			$formSelectedChannel = $_POST['imoje-selected-channel-installments'];
-
 		}
 
 		$post_imoje_selected_channel = '';
@@ -470,9 +486,8 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	/**
 	 * @return array
 	 */
-	public function get_payment_channels()
-	{
-		return $this->prepare_payment_methods_block_checkout(static::PAYMENT_METHOD_NAME);
+	public function get_payment_channels() {
+		return $this->prepare_payment_methods_block_checkout( static::PAYMENT_METHOD_NAME );
 	}
 
 	/**
@@ -480,35 +495,34 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	 *
 	 * @return array
 	 */
-	protected function prepare_payment_methods_block_checkout( $payment_method_name ){
+	protected function prepare_payment_methods_block_checkout( $payment_method_name ) {
 		$child_payment_method_name = static::PAYMENT_METHOD_NAME;
-		$currencies = get_option("woocommerce_{$child_payment_method_name}_settings", [])['currencies'] ?? [];
-		$cart_total = WC()->cart->get_cart_contents_total();
+		$currencies                = get_option( "woocommerce_{$child_payment_method_name}_settings", [] )['currencies'] ?? [];
+		$cart_total                = WC()->cart->get_cart_contents_total();
 
-		if (!is_array($currencies)) {
-			$currencies = [$currencies];
+		if ( ! is_array( $currencies ) ) {
+			$currencies = [ $currencies ];
 		}
 
-
-		$currencies = array_map('strtolower', $currencies);
+		$currencies    = array_map( 'strtolower', $currencies );
 		$imoje_service = $this->get_service_active();
 
-		if (!isset($imoje_service['paymentMethods']) || !is_array($imoje_service['paymentMethods'])) {
+		if ( ! isset( $imoje_service['paymentMethods'] ) || ! is_array( $imoje_service['paymentMethods'] ) ) {
 			return [];
 		}
 
-		$filtered_methods = array_filter($imoje_service['paymentMethods'], function ($method) use ($currencies, $payment_method_name) {
-			return isset($method['paymentMethod'])
-				&& $method['paymentMethod'] === $payment_method_name
-				&& in_array(strtolower($method['currency']), $currencies, true)
-				&& $method['isActive'];
-		});
+		$filtered_methods = array_filter( $imoje_service['paymentMethods'], function ( $method ) use ( $currencies, $payment_method_name ) {
+			return isset( $method['paymentMethod'] )
+			       && $method['paymentMethod'] === $payment_method_name
+			       && in_array( strtolower( $method['currency'] ), $currencies, true )
+			       && $method['isActive'];
+		} );
 
 		$prepared_methods = [];
-		foreach($filtered_methods as $key => $paymentMethod) {
-			$prepared_methods[$key] = $this->get_payment_channel_to_array($paymentMethod, $cart_total, true);
+		foreach ( $filtered_methods as $key => $paymentMethod ) {
+			$prepared_methods[ $key ] = $this->get_payment_channel_to_array( $paymentMethod, $cart_total, true );
 		}
 
 		return $prepared_methods;
 	}
- }
+}
