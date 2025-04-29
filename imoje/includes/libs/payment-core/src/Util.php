@@ -96,6 +96,7 @@ class Util {
 		'card'               => 'card',
 		'ing'                => 'ing',
 		'imoje_installments' => 'imoje_installments',
+		'wallet'             => 'wallet',
 	];
 
 	/**
@@ -135,6 +136,8 @@ class Util {
 		'blik_paylater'  => 'blik_paylater',
 		'inbank'         => 'inbank',
 		'inbank_0'       => 'inbank_0',
+		'applepay'       => 'applepay',
+		'gpay'           => 'gpay',
 	];
 
 	/**
@@ -164,6 +167,8 @@ class Util {
 		'paypo'          => 'paypo.svg',
 		'pragma_go'      => 'pragma_go.svg',
 		'blik_paylater'  => 'blik_paylater.png',
+		'applepay'       => 'applepay.png',
+		'gpay'           => 'gpay.png',
 	];
 
 	/**

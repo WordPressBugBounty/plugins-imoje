@@ -1,6 +1,7 @@
 <?php
 
 use Imoje\Payment\Util;
+use Imoje\Payment\Notification;
 
 /**
  * Class WC_Gateway_Imoje_Abstract
@@ -128,10 +129,16 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 				__( 'Visa Mobile payment with imoje ', 'imoje' ),
 				true
 			),
-			WC_Gateway_ImojeInstallments::PAYMENT_METHOD_NAME         => Helper::get_gateway_details(
+			WC_Gateway_ImojeInstallments::PAYMENT_METHOD_NAME => Helper::get_gateway_details(
 				__( 'imoje - installments', 'imoje' ),
 				__( 'imoje installments', 'imoje' ),
 				__( 'imoje installments', 'imoje' ),
+				false
+			),
+			WC_Gateway_ImojeWallet::PAYMENT_METHOD_NAME       => Helper::get_gateway_details(
+				__( 'imoje - electronic wallet', 'imoje' ),
+				__( 'Electronic wallet', 'imoje' ),
+				__( 'Pay with electronic wallet via imoje.', 'imoje' ),
 				false
 			),
 		];
@@ -232,12 +239,6 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 				'title'   => __( 'Enable / Disable', 'imoje' ),
 				'type'    => 'checkbox',
 				'label'   => __( 'Enable', 'imoje' ),
-				'default' => 'no',
-			],
-			'debug_mode'              => [
-				'title'   => __( 'Debug mode', 'imoje' ),
-				'type'    => 'checkbox',
-				'label'   => __( 'Enable debug mode', 'imoje' ),
 				'default' => 'no',
 			],
 			'sandbox'                 => [
@@ -358,11 +359,117 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 	 */
 	public function process_notification() {
 
-		Helper::check_notification(
+		$notification = new Notification(
 			$this->get_option( 'service_id' ),
-			$this->get_option( 'service_key' ),
-			$this->get_option( 'debug_mode' )
+			$this->get_option( 'service_key' )
 		);
+
+		// it can be order data or notification code - depends on verification notification
+		$result_check_request_notification = $notification->checkRequest();
+
+		if ( is_int( $result_check_request_notification ) ) {
+			echo $notification->formatResponse( Notification::NS_ERROR, $result_check_request_notification );
+			exit();
+		}
+
+		if ( ! ( $order = wc_get_order( $result_check_request_notification['transaction']['orderId'] ) ) ) {
+
+			echo $notification->formatResponse( Notification::NS_ERROR, Notification::NC_ORDER_NOT_FOUND );
+			exit();
+		}
+
+		$order_status = $order->get_status();
+
+		if ( $result_check_request_notification['transaction']['type'] === Notification::TRT_REFUND ) {
+
+			if ( $result_check_request_notification['transaction']['status'] !== Notification::TRS_SETTLED ) {
+				echo $notification->formatResponse( Notification::NS_OK, Notification::NC_IMOJE_REFUND_IS_NOT_SETTLED );
+
+				exit();
+			}
+
+			if ( $order_status === 'refunded' ) {
+				echo $notification->formatResponse( Notification::NS_ERROR, Notification::NC_ORDER_STATUS_IS_INVALID_FOR_REFUND );
+				exit();
+			}
+
+			$refund = wc_create_refund( [
+				'amount'         => Util::convertAmountToMain( $result_check_request_notification['transaction']['amount'] ),
+				'reason'         => 'imoje API',
+				'order_id'       => $result_check_request_notification['transaction']['orderId'],
+				'refund_payment' => true,
+			] );
+
+			if ( $refund->errors ) {
+
+				echo $notification->formatResponse( Notification::NS_ERROR );
+				exit();
+			}
+
+			$order->add_order_note(
+				sprintf(
+					__( 'Refund for amount %s with UUID %s has been correctly processed.', 'imoje' ),
+					$result_check_request_notification['transaction']['amount'],
+					$result_check_request_notification['transaction']['id']
+				)
+			);
+
+			echo $notification->formatResponse( Notification::NS_OK );
+			exit;
+		}
+
+		if ( $order_status === 'completed' || $order_status === 'processing' ) {
+
+			echo $notification->formatResponse( Notification::NS_ERROR, Notification::NC_INVALID_ORDER_STATUS );
+			exit();
+		}
+
+		if ( ! Notification::checkRequestAmount(
+			$result_check_request_notification,
+			Util::convertAmountToFractional( $order->data['total'] ),
+			$order->data['currency']
+		) ) {
+
+			echo $notification->formatResponse( Notification::NS_ERROR, Notification::NC_AMOUNT_NOT_MATCH );
+			exit();
+		}
+
+		$transactionStatuses = Util::getTransactionStatuses();
+
+		if ( ! isset( $transactionStatuses[ $result_check_request_notification['transaction']['status'] ] ) ) {
+			echo $notification->formatResponse( Notification::NS_ERROR, Notification::NC_UNHANDLED_STATUS );
+			exit;
+		}
+
+		switch ( $result_check_request_notification['transaction']['status'] ) {
+			case Notification::TRS_SETTLED:
+
+				$order->update_status( $order->needs_processing()
+					? 'processing'
+					: 'completed',
+					__( 'Transaction reference', 'imoje' ) . ': ' . $result_check_request_notification['transaction']['id'] );
+
+				if ( Helper::check_is_config_value_selected( $this->get_option( 'override_method_name' ) ) && $order->get_payment_method() !== $this->payment_method_name && $order->get_payment_method_title() !== $this->get_payment_method_data( 'display_name' ) ) {
+
+					$order->set_payment_method( $this->payment_method_name );
+					$order->set_payment_method_title( $this->get_payment_method_data( 'display_name' ) );
+					$order->save();
+				};
+
+				$order->update_meta_data( 'imoje_transaction_uuid', $result_check_request_notification['transaction']['id'] );
+				$order->save_meta_data();
+
+				echo $notification->formatResponse( Notification::NS_OK );
+				exit;
+			case Notification::TRS_REJECTED:
+				$order->update_status( 'failed' );
+				$order->add_order_note( __( 'Transaction reference', 'imoje' ) . ': ' . $result_check_request_notification['transaction']['id'] );
+				echo $notification->formatResponse( Notification::NS_OK );
+				exit;
+			default:
+				echo $notification->formatResponse( Notification::NS_OK, Notification::NC_UNHANDLED_STATUS );
+				exit;
+		}
 	}
 
 	/**

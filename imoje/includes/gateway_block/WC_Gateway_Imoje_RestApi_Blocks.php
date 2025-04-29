@@ -51,6 +51,7 @@ class WC_Gateway_Imoje_RestApi_Blocks extends AbstractPaymentMethodType {
 			$this->enqueue_imoje_pbl_payment_script();
 			$this->enqueue_imoje_visa_payment_script();
 			$this->enqueue_imoje_installments_payment_script();
+			$this->enqueue_imoje_wallet_payment_script();
 		}
 	}
 
@@ -103,7 +104,7 @@ class WC_Gateway_Imoje_RestApi_Blocks extends AbstractPaymentMethodType {
 			'imoje-blik-payment-block',
 			'imoje_blik_js_object',
 			[
-				'name_blik'            => 'imoje_blik',
+				'name_blik'            => WC_Gateway_ImojeBlik::PAYMENT_METHOD_NAME,
 				'logo_blik'            => plugins_url( '../../assets/images/imoje_blik.png', __FILE__ ),
 				'logo_blik_oneclick'   => '',
 				'settings_blik'        => get_option( 'woocommerce_imoje_blik_settings', [] ),
@@ -133,7 +134,7 @@ class WC_Gateway_Imoje_RestApi_Blocks extends AbstractPaymentMethodType {
 			'imoje-payment-block',
 			'imoje_js_object',
 			[
-				'name_imoje'     => 'imoje',
+				'name_imoje'     => WC_Gateway_Imoje::PAYMENT_METHOD_NAME,
 				'logo_imoje'     => plugins_url( '../../assets/images/imoje.png', __FILE__ ),
 				'settings_imoje' => get_option( 'woocommerce_imoje_settings', [] ),
 			]
@@ -155,13 +156,13 @@ class WC_Gateway_Imoje_RestApi_Blocks extends AbstractPaymentMethodType {
 			true
 		);
 
-		$imojePaylater   = new WC_Gateway_ImojePaylater();
+		$imojePaylater = new WC_Gateway_ImojePaylater();
 
 		wp_localize_script(
 			'imoje-paylater-payment-block',
 			'imoje_paylater_js_object',
 			[
-				'name_paylater'            => 'imoje_paylater',
+				'name_paylater'            => WC_Gateway_ImojePaylater::PAYMENT_METHOD_NAME,
 				'logo_paylater'            => plugins_url( '../../assets/images/imoje_paylater.png', __FILE__ ),
 				'settings_paylater'        => get_option( 'woocommerce_imoje_paylater_settings', [] ),
 				'payment_methods_paylater' => $this->get_block_checkout_tooltip( $imojePaylater->get_payment_channels() ),
@@ -189,7 +190,7 @@ class WC_Gateway_Imoje_RestApi_Blocks extends AbstractPaymentMethodType {
 			'imoje-cards-payment-block',
 			'imoje_cards_js_object',
 			[
-				'name_cards'     => 'imoje_cards',
+				'name_cards'     => WC_Gateway_ImojeCards::PAYMENT_METHOD_NAME,
 				'logo_cards'     => plugins_url( '../../assets/images/imoje_cards.png', __FILE__ ),
 				'settings_cards' => get_option( 'woocommerce_imoje_cards_settings', [] ),
 			]
@@ -211,13 +212,13 @@ class WC_Gateway_Imoje_RestApi_Blocks extends AbstractPaymentMethodType {
 			true
 		);
 
-		$imojePbl        = new WC_Gateway_ImojePbl;
+		$imojePbl = new WC_Gateway_ImojePbl;
 
 		wp_localize_script(
 			'imoje-pbl-payment-block',
 			'imoje_pbl_js_object',
 			[
-				'name_pbl'            => 'imoje_pbl',
+				'name_pbl'            => WC_Gateway_ImojePbl::PAYMENT_METHOD_NAME,
 				'logo_pbl'            => plugins_url( '../../assets/images/imoje_pbl.png', __FILE__ ),
 				'settings_pbl'        => get_option( 'woocommerce_imoje_pbl_settings', [] ),
 				'payment_methods_pbl' => $this->get_block_checkout_tooltip( $imojePbl->get_payment_channels() ),
@@ -244,7 +245,7 @@ class WC_Gateway_Imoje_RestApi_Blocks extends AbstractPaymentMethodType {
 			'imoje-visa-payment-block',
 			'imoje_visa_js_object',
 			[
-				'name_visa'     => 'imoje_visa',
+				'name_visa'     => WC_Gateway_ImojeVisa::PAYMENT_METHOD_NAME,
 				'logo_visa'     => plugins_url( '../../assets/images/imoje_visa.png', __FILE__ ),
 				'settings_visa' => get_option( 'woocommerce_imoje_visa_settings', [] ),
 			]
@@ -272,10 +273,39 @@ class WC_Gateway_Imoje_RestApi_Blocks extends AbstractPaymentMethodType {
 			'imoje-installments-payment-block',
 			'imoje_installments_js_object',
 			[
-				'name_installments'     => 'imoje_installments',
+				'name_installments'     => WC_Gateway_ImojeInstallments::PAYMENT_METHOD_NAME,
 				'logo_installments'     => plugins_url( '../../assets/images/imoje_installments.png', __FILE__ ),
 				'settings_installments' => get_option( 'woocommerce_imoje_installments_settings', [] ),
 				'calculator_data'       => $imojeInstallments->get_calculator_data(),
+			]
+		);
+	}
+
+	/**
+	 * @return void
+	 */
+	private function enqueue_imoje_wallet_payment_script() {
+		wp_enqueue_script(
+			'imoje-wallet-payment-block',
+			plugins_url( '../../assets/js/checkout/imoje-wallet-block.min.js', __FILE__ ),
+			[
+				'wp-element',
+				'wc-blocks-registry',
+			],
+			'1.0.0',
+			true
+		);
+
+		$imojeWallet = new WC_Gateway_ImojeWallet();
+
+		wp_localize_script(
+			'imoje-wallet-payment-block',
+			'imoje_wallet_js_object',
+			[
+				'name_wallet'            => WC_Gateway_ImojeWallet::PAYMENT_METHOD_NAME,
+				'logo_wallet'            => plugins_url( '../../assets/images/imoje_wallet.png', __FILE__ ),
+				'settings_wallet'        => get_option( 'woocommerce_imoje_wallet_settings', [] ),
+				'payment_methods_wallet' => $this->get_block_checkout_tooltip( $imojeWallet->get_payment_channels() ),
 			]
 		);
 	}

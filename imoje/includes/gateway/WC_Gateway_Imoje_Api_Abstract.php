@@ -265,12 +265,18 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 		$currency_iso_code             = get_woocommerce_currency();
 		$payment_method_list_online    = [];
 		$payment_method_list_no_online = [];
+		$pm_wallet                     = Util::getPaymentMethod( 'wallet' );
+		$pmc_gpay                      = Util::getPaymentMethodCode( 'gpay' );
+		$pmc_applepay                  = Util::getPaymentMethodCode( 'applepay' );
+		$pmc_blik                      = Util::getPaymentMethodCode( 'blik' );
 
 		foreach ( $this->imoje_service['paymentMethods'] as $payment_method ) {
 
 			if ( ! $payment_method['isActive']
 			     || strtolower( $payment_method['currency'] ) !== strtolower( $currency_iso_code )
 			     || ! in_array( $payment_method['paymentMethod'], $pm )
+			     || $this->check_payment_method_with_inclusions( $payment_method['paymentMethod'], $payment_method['paymentMethodCode'], $pm_wallet, [ $pmc_gpay, $pmc_applepay ] )
+			     || $this->check_payment_method_with_inclusions( $payment_method['paymentMethod'], $payment_method['paymentMethodCode'], $pm_blik, [ $pmc_blik ] )
 			) {
 				continue;
 			}
@@ -497,8 +503,11 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	 */
 	protected function prepare_payment_methods_block_checkout( $payment_method_name ) {
 		$child_payment_method_name = static::PAYMENT_METHOD_NAME;
-		$currencies                = get_option( "woocommerce_{$child_payment_method_name}_settings", [] )['currencies'] ?? [];
-		$cart_total                = WC()->cart->get_cart_contents_total();
+		$settings                  = get_option( "woocommerce_" . $child_payment_method_name . "_settings" );
+		$currencies                = ( is_array( $settings ) && isset( $settings['currencies'] ) )
+			? $settings['currencies']
+			: [];
+		$cart_total                = WC()->cart->get_cart_contents_total() + WC()->cart->get_cart_contents_tax();
 
 		if ( ! is_array( $currencies ) ) {
 			$currencies = [ $currencies ];
@@ -519,10 +528,35 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 		} );
 
 		$prepared_methods = [];
-		foreach ( $filtered_methods as $key => $paymentMethod ) {
-			$prepared_methods[ $key ] = $this->get_payment_channel_to_array( $paymentMethod, $cart_total, true );
+		$wallet           = Util::getPaymentMethod( 'wallet' );
+		$pmc_gpay         = Util::getPaymentMethodCode( 'gpay' );
+		$pmc_applepay     = Util::getPaymentMethodCode( 'applepay' );
+		$pm_blik          = Util::getPaymentMethod( 'blik' );
+		$pmc_blik         = Util::getPaymentMethodCode( 'blik' );
+
+		foreach ( $filtered_methods as $key => $payment_method ) {
+
+			if ( $this->check_payment_method_with_inclusions( $payment_method['paymentMethod'], $payment_method['paymentMethodCode'], $wallet, [ $pmc_gpay, $pmc_applepay ] )
+			     || $this->check_payment_method_with_inclusions( $payment_method['paymentMethod'], $payment_method['paymentMethodCode'], $pm_blik, [ $pmc_blik ] ) ) {
+				continue;
+			}
+
+			$prepared_methods[ $key ] = $this->get_payment_channel_to_array( $payment_method, $cart_total, true );
 		}
 
 		return $prepared_methods;
+	}
+
+	/**
+	 * @param string $payment_method
+	 * @param string $payment_method_code
+	 * @param string $expected_method
+	 * @param array  $excluded_payment_method_codes
+	 *
+	 * @return bool
+	 */
+	private function check_payment_method_with_inclusions( $payment_method, $payment_method_code, $expected_method, $excluded_payment_method_codes ) {
+		return $payment_method === $expected_method
+		       && ! in_array( $payment_method_code, $excluded_payment_method_codes );
 	}
 }

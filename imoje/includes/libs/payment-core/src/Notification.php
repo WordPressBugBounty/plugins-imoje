@@ -195,11 +195,6 @@ class Notification
 	private $serviceKey = '';
 
 	/**
-	 * @var string
-	 */
-	private $isDebugMode = '';
-
-	/**
 	 * @var string|bool
 	 */
 	private $orderArrangement = '';
@@ -209,13 +204,11 @@ class Notification
 	 *
 	 * @param string $serviceId
 	 * @param string $serviceKey
-	 * @param bool   $isDebugMode
 	 */
-	public function __construct($serviceId, $serviceKey, $isDebugMode, $orderArrangement = false)
+	public function __construct($serviceId, $serviceKey, $orderArrangement = false)
 	{
 		$this->serviceId = $serviceId;
 		$this->serviceKey = $serviceKey;
-		$this->isDebugMode = $isDebugMode;
 
 		if($orderArrangement) {
 			$this->orderArrangement = $orderArrangement;
@@ -236,7 +229,7 @@ class Notification
 			'status' => $status,
 		];
 
-		if($this->isDebugMode && $code) {
+		if($code) {
 			$response['data'] = [
 				'code' => $code,
 			];

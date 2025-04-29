@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce imoje
 Plugin URI: https://imoje.pl
 Description: Add payment via imoje to WooCommerce
-Version: 4.8.2
+Version: 4.9.0
 Author: imoje <kontakt.tech@imoje.pl>
 Author URI: https://imoje.pl
 Text Domain: imoje
@@ -27,8 +27,14 @@ function imoje_init_woocommerce_gateway() {
 		return;
 	}
 
-	@include_once __DIR__ . "/includes/libs/payment-core/vendor/autoload.php";
-	@include_once __DIR__ . "/includes/libs/Payment-core/vendor/autoload.php";
+	$pathToAutoload = __DIR__ . "/includes/libs/payment-core/vendor/autoload.php";
+
+	if (file_exists($pathToAutoload)) {
+		include_once $pathToAutoload;
+	} else {
+		include_once __DIR__ . "/includes/libs/Payment-core/vendor/autoload.php";
+	}
+
 	@include_once __DIR__ . "/includes/Helper.php";
 
 	load_plugin_textdomain( 'imoje', false, dirname( plugin_basename( __FILE__ ) ) . '/langs/' );
@@ -68,6 +74,7 @@ function imoje_get_gateways() {
 		'WC_Gateway_ImojePbl',
 		'WC_Gateway_ImojeVisa',
 		'WC_Gateway_ImojeInstallments',
+		'WC_Gateway_ImojeWallet',
 	];
 }
 
