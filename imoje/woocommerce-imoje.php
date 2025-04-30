@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce imoje
 Plugin URI: https://imoje.pl
 Description: Add payment via imoje to WooCommerce
-Version: 4.9.0
+Version: 4.9.1
 Author: imoje <kontakt.tech@imoje.pl>
 Author URI: https://imoje.pl
 Text Domain: imoje

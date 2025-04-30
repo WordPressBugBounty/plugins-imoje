@@ -259,6 +259,12 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 				'default' => 'no',
 				'label'   => __( 'Enable', 'imoje' ),
 			],
+			'update_method_name'          => [
+				'title'   => __( 'Update method name in order details via notification', 'imoje' ),
+				'type'    => 'checkbox',
+				'default' => 'no',
+				'label'   => __( 'Enable', 'imoje' ),
+			],
 			'title'                   => [
 				'title'   => __( 'Payment title', 'imoje' ),
 				'type'    => 'text',
@@ -449,7 +455,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 					: 'completed',
 					__( 'Transaction reference', 'imoje' ) . ': ' . $result_check_request_notification['transaction']['id'] );
 
-				if ( Helper::check_is_config_value_selected( $this->get_option( 'override_method_name' ) ) && $order->get_payment_method() !== $this->payment_method_name && $order->get_payment_method_title() !== $this->get_payment_method_data( 'display_name' ) ) {
+				if ( Helper::check_is_config_value_selected( $this->get_option( 'update_method_name' ) ) && $order->get_payment_method() !== $this->payment_method_name && $order->get_payment_method_title() !== $this->get_payment_method_data( 'display_name' ) ) {
 
 					$order->set_payment_method( $this->payment_method_name );
 					$order->set_payment_method_title( $this->get_payment_method_data( 'display_name' ) );
