@@ -65,6 +65,10 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	 */
 	protected function verify_transaction( $transaction ) {
 
+		if ( Helper::check_is_config_value_selected( $this->get_option( 'view_field' ) ) ) {
+			return isset( $transaction['success'] )
+			       && $transaction['success'];
+		}
 
 		return isset( $transaction['success'] )
 		       && isset( $transaction['body']['action']['url'] )
@@ -79,7 +83,6 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	 * @return bool
 	 */
 	protected function verify_payment_link( $transaction ) {
-
 
 		return isset( $transaction['success'] )
 		       && isset( $transaction['body']['payment']['url'] )
@@ -400,7 +403,9 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 
 			wc_add_notice( $customer_notice_error, 'error' );
 
-			return false;
+			return [
+				'result' => 'failure'
+			];
 		}
 
 		// adjust it to installments
@@ -432,7 +437,9 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 
 			wc_add_notice( $customer_notice_error, 'error' );
 
-			return false;
+			return [
+				'result' => 'failure'
+			];
 		}
 
 		$transaction = $this->create_transaction_and_process_order(
@@ -452,7 +459,9 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 		if ( ! $transaction ) {
 			wc_add_notice( $customer_notice_error, 'error' );
 
-			return false;
+			return [
+				'result' => 'failure'
+			];
 		}
 
 		$redirect_url = isset( $transaction['action']['url'] ) && $transaction['action']['url']
@@ -462,8 +471,11 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 				: '' );
 
 		if ( ! $redirect_url ) {
+
+			wc_add_notice( $customer_notice_error, 'error' );
+
 			return [
-				'result' => false,
+				'result' => 'failure'
 			];
 		}
 

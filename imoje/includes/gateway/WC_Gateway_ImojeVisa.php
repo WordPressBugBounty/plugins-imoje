@@ -48,7 +48,7 @@ class WC_Gateway_ImojeVisa extends WC_Gateway_Imoje_Api_Abstract {
 			self::get_notification_url(),
 			$order->get_billing_phone()
 				?: '',
-			[ Util::getPaymentMethod( 'card' ) ],
+			[ Util::getPaymentMethod( 'wallet' ) ],
 			Helper::get_lease_now( $order, $this->get_option( 'ing_lease_now' ), true ),
 			Helper::get_invoice(
 				$order,

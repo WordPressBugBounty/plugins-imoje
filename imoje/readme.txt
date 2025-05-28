@@ -1,10 +1,10 @@
 === imoje ===
 Contributors: imoje
 Tags: imoje, woocommerce, payments, payment gateway, checkout
-Tested up to: 6.8.0
+Tested up to: 6.8.1
 Requires PHP: 5.6.0
 License: GPLv2
-Stable tag: 4.9.1
+Stable tag: 4.10.1
 
 Add payment via imoje to WooCommerce
 
@@ -72,6 +72,11 @@ You can copy and enter any notification address in the imoje administration pane
 
 
 == Changelog ==
+= 4.10.1 =
+* modify response on checkout when something went wrong
+= 4.10.0 =
+* added support for basises of vat exemption in ING Księgowość invoices
+* minor fixes 
 = 4.9.1 =
 * minor fixes
 = 4.9.0 =

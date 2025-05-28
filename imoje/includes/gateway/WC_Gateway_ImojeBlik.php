@@ -50,7 +50,9 @@ class WC_Gateway_ImojeBlik extends WC_Gateway_Imoje_Api_Abstract {
 
 			wc_add_notice( $customer_notice_error, 'error' );
 
-			return false;
+			return [
+				'result' => 'failure'
+			];
 		}
 
 		$post_imoje_blik_code = '';
@@ -65,17 +67,23 @@ class WC_Gateway_ImojeBlik extends WC_Gateway_Imoje_Api_Abstract {
 		if ( ! $post_imoje_blik_code
 		     || ! preg_match( '/^[0-9]{6}$/i', $post_imoje_blik_code )
 		     || ! $this->check_availability( $order->get_total(), $pm, $pmc ) ) {
+
 			wc_add_notice( $customer_notice_error, 'error' );
 
-			return false;
+			return [
+				'result' => 'failure'
+			];
 		}
 
 		$transaction = $this->create_transaction_and_process_order( wc_get_order( $order_id ), $pm, $pmc );
 
 		if ( empty( $transaction['transaction']['id'] ) ) {
+
 			wc_add_notice( $customer_notice_error, 'error' );
 
-			return false;
+			return [
+				'result' => 'failure'
+			];
 		}
 
 		$order->update_meta_data( 'imoje_transaction_uuid', $transaction['transaction']['id'] );

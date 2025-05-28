@@ -106,6 +106,36 @@ class Invoice {
 	];
 
 	/**
+	 * @var string
+	 */
+	protected $basisForVatExemption;
+
+	/**
+	 * @var array
+	 */
+	private static $basisExempt = [
+		'dental_technican_services'        => 'Usługi techników dentystycznych - art. 43 ust. 1 pkt 14 ustawy o VAT',
+		'doctor_dentist_services'          => 'Usługi lekarza i lekarza dentysty - art. 43 ust. 1 pkt 19 pkt a ustawy o VAT',
+		'physiotherapy_services'           => 'Usługi fizjoterapeutyczne - art. 43 ust. 1 pkt 19 pkt a ustawy o VAT',
+		'nursing_services'                 => 'Usługi pielęgniarskie - art. 43 ust. 1 pkt 19b ustawy o VAT',
+		'psychological_services'           => 'Usługi psychologów - art. 43 ust. 1 pkt 19d ustawy o VAT',
+		'medical_transport_services'       => 'Usługi transportu sanitarnego - art. 43 ust. 1 pkt 20 ustawy o VAT',
+		'care_services'                    => 'Usługi w zakresie opieki nad dziećmi i młodzieżą - art. 43 ust. 1 pkt 24 pkt a i/lub b ustawy o VAT',
+		'tutoring'                         => 'Usługi prywatnego nauczania świadczone przez nauczycieli - art. 43 ust. 1 pkt 27 ustawy o VAT',
+		'teaching_foreign_languages'       => 'Usługi nauczania języków obcych - art. 43 ust. 1 pkt 28 ustawy o VAT',
+		'artists'                          => 'Artyści wynagradzani w formie honorariów - art. 43 ust. 1 pkt 33 pkt b ustawy o VAT',
+		'renting_property'                 => 'Najem nieruchomości wyłącznie na cele mieszkaniowe - art. 43 ust. 1 pkt 36 ustawy o VAT',
+		'insurance_services'               => 'Usługi ubezpieczeniowe i pośrednictwo w ubezpieczeniach - art. 43 ust. 1 pkt 37 ustawy o VAT',
+		'credits_and_loans_services'       => 'Usługi udzielania i pośrednictwo w udzielaniu kredytów lub pożyczek - art. 43 ust. 1 pkt 38 ustawy o VAT',
+		'guarantiees'                      => 'Udzielanie poręczeń oraz gwarancji finansowych - art. 43 ust. 1 pkt 39 ustawy o VAT',
+		'special_conditions_for_exemption' => 'Szczególne warunki zwolnienia zg. z art. 82 ust. 3',
+		'ue_transactions'                  => 'Zwolnienie zg. z dyrektywą 2006/112/WE',
+		'subjective_exemptions'            => 'Zwolnienie podmiotowe zg. z art. 113 ust. 1 i 9 ustawy o VAT',
+		'other'                            => 'Inna',
+		'other_objective_exemptions'       => 'Pozostałe zwolnienia przedmiotowe - art. 43',
+	];
+
+	/**
 	 * @param string $currency
 	 *
 	 * @return bool
@@ -202,6 +232,32 @@ class Invoice {
 	}
 
 	/**
+	 * @param string $basis
+	 *
+	 * @return string
+	 */
+	public static function getBasisExempt( $basis ) {
+
+		if ( isset( self::$basisExempt[ $basis ] ) ) {
+			return strtoupper( $basis );
+		}
+
+		return '';
+	}
+
+	/**
+	 * @param string $basis
+	 *
+	 * @return void
+	 */
+	public function setBasis( $basis) {
+
+		$this->basisForVatExemption = [
+			'type' => $basis
+		];
+	}
+
+	/**
 	 * @return array|string
 	 */
 	public function prepare( $isApi ) {
@@ -210,6 +266,10 @@ class Invoice {
 			'buyer'     => $this->buyer,
 			'positions' => $this->positions,
 		];
+
+		if ( $this->basisForVatExemption ) {
+			$array['basisForVatExemption'] = $this->basisForVatExemption;
+		}
 
 		return $isApi
 			? $array

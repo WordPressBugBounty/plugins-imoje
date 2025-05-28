@@ -156,11 +156,13 @@ class Helper {
 
 		$cart = self::get_cart( $order );
 
-		if ( empty( $cart['items'] ) ) {
+		$items = $cart->getItems();
+
+		if ( empty( $items ) ) {
 			return [];
 		}
 
-		foreach ( $cart['items'] as $item ) {
+		foreach ( $items as $item ) {
 
 			$tax = null;
 			try {
@@ -180,22 +182,32 @@ class Helper {
 			);
 		}
 
-		if ( isset( $cart['shipping'] ) && $cart['shipping'] ) {
-			$invoice->addItem( $cart['shipping']['name'],
+		$basis_for_vat_exemption = $cart->getBasis();
+
+		if ( $basis_for_vat_exemption ) {
+			$invoice->setBasis( $basis_for_vat_exemption );
+		}
+
+		$shipping = $cart->getShipping();
+
+		if ( $shipping ) {
+			$invoice->addItem( $shipping['name'],
 				1,
 				1,
-				constant( '\Imoje\Payment\Invoice::TAX_' . $cart['shipping']['vat'] ),
-				$cart['shipping']['amount']
+				constant( '\Imoje\Payment\Invoice::TAX_' . $shipping['vat'] ),
+				$shipping['amount']
 			);
 		}
 
+		$billing = $cart->getAddressBilling();
+
 		$invoice->setBuyer( Invoice::BUYER_PERSON,
 			$order->get_billing_email(),
-			$cart['address']['billing']['name'],
-			$cart['address']['billing']['street'],
-			$cart['address']['billing']['city'],
-			$cart['address']['billing']['postalCode'],
-			$cart['address']['billing']['country'] );
+			$billing['name'],
+			$billing['street'],
+			$billing['city'],
+			$billing['postalCode'],
+			$billing['country'] );
 
 		$vat_number = trim( $order->get_meta( $meta_tax_field_name ) );
 
@@ -221,7 +233,7 @@ class Helper {
 	/**
 	 * @param WC_Order $order
 	 *
-	 * @return array
+	 * @return CartData
 	 */
 	public static function get_cart( $order ) {
 
@@ -230,13 +242,32 @@ class Helper {
 		$cart_data->setCreatedAt( strtotime( $order->get_date_created() ) );
 		$cart_data->setAmount( Util::convertAmountToFractional( $order->get_total() ) );
 
+		$basis = '';
+
+		$exempt_postfix = explode( '_', Invoice::TAX_EXEMPT )[1];
+
 		foreach ( $order->get_items() as $item ) {
 
 			$item_tax_class = $item->get_tax_class();
 
+			$item_tax_class_lower = strtolower( $item_tax_class );
+
 			$rate = '';
-			if ( strtolower( $item_tax_class ) === Invoice::SHOP_TAX_EXEMPT ) {
-				$rate = explode( '_', Invoice::TAX_EXEMPT )[1];
+
+			$is_exempted = false;
+
+			if ( strpos( $item_tax_class_lower, 'zw_' ) === 0 ) {
+
+				$basis_exempt = Invoice::getBasisExempt( substr( $item_tax_class_lower, strpos( $item_tax_class_lower, '_' ) + 1 ) );
+				if ( $basis_exempt ) {
+					$basis = $basis_exempt;
+				}
+
+				$is_exempted  = true;
+			}
+
+			if ( $item_tax_class_lower === Invoice::SHOP_TAX_EXEMPT || $is_exempted ) {
+				$rate = $exempt_postfix;
 			}
 
 			if ( ! $rate ) {
@@ -256,6 +287,10 @@ class Helper {
 				$item->get_quantity(),
 				false
 			);
+		}
+
+		if ( $basis ) {
+			$cart_data->setBasis( $basis );
 		}
 
 		$phone = $order->get_billing_phone();
@@ -296,7 +331,7 @@ class Helper {
 				0
 			);
 
-			return $cart_data->prepareCartDataArray();
+			return $cart_data;
 		}
 
 		$shipping_data   = $shipping_data->get_data();
@@ -322,7 +357,7 @@ class Helper {
 			$order->get_shipping_postcode()
 		);
 
-		return $cart_data->prepareCartDataArray();
+		return $cart_data;
 	}
 
 	/**

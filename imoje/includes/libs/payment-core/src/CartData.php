@@ -57,11 +57,39 @@ class CartData
 	private $previous = [];
 
 	/**
+	 * @var string
+	 */
+	private $basisForVatExemption = '';
+
+	/**
 	 * @return array
 	 */
 	public function getItems()
 	{
 		return $this->items;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getShipping()
+	{
+		return $this->shipping;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getAddressBilling() {
+		return $this->addressBilling;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getBasis() {
+
+		return $this->basisForVatExemption;
 	}
 
 	/**
@@ -335,5 +363,16 @@ class CartData
 		}
 
 		return $data;
+	}
+
+	/**
+	 * @param string $basis
+	 *
+	 * @return void
+	 */
+	public function setBasis( $basis ) {
+
+		$this->basisForVatExemption = $basis;
+
 	}
 }

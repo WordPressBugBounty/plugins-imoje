@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2025-04-30 09:35+0200\n"
-"PO-Revision-Date: 2025-04-30 09:35+0200\n"
+"POT-Creation-Date: 2025-05-14 15:02+0200\n"
+"PO-Revision-Date: 2025-05-14 15:02+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pl_PL\n"
@@ -16,44 +16,44 @@ msgstr ""
 "X-Poedit-KeywordsList: __;esc_html__;esc_html_e\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: includes/Helper.php:366 includes/gateway/WC_Gateway_Imoje_Abstract.php:417
+#: includes/Helper.php:401 includes/gateway/WC_Gateway_Imoje_Abstract.php:420
 #, php-format
 msgid "Refund for amount %s with UUID %s has been correctly processed."
 msgstr "Zwrot na kwotę %s z identyfikatorem %s został poprawnie przetworzony."
 
-#: includes/Helper.php:381
+#: includes/Helper.php:416
 #, php-format
 msgid "Refund for amount %s with UUID %s has been requested"
 msgstr "Zwrot na kwotę %s z identyfikatorem %s został zlecony"
 
-#: includes/Helper.php:387
+#: includes/Helper.php:422
 msgid "A refund has been requested and waiting for completion."
 msgstr ""
 "Złożono wniosek o zwrot pieniędzy i trwa oczekiwanie na jego rozpatrzenie."
 
-#: includes/Helper.php:398
+#: includes/Helper.php:433
 msgid "Refund error: "
 msgstr "Błąd zwrotu: "
 
-#: includes/Helper.php:401
+#: includes/Helper.php:436
 msgid "Refund error."
 msgstr "Błąd zwrotu."
 
-#: includes/Helper.php:413
+#: includes/Helper.php:448
 #, php-format
 msgid "The payment method is available for transactions %s %s %s"
 msgstr "Metoda płatności jest dostępna dla transakcji %s %s %s"
 
-#: includes/Helper.php:415
+#: includes/Helper.php:450
 msgid "above"
 msgstr "powyżej"
 
-#: includes/Helper.php:416
+#: includes/Helper.php:451
 msgid "below"
 msgstr "poniżej"
 
 #: includes/gateway/WC_Gateway_ImojeBlik.php:45
-#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:395
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:398
 msgid "Payment error. Contact with shop administrator."
 msgstr "Spróbuj ponownie później lub skontaktuj się z obsługą sklepu."
 
@@ -165,8 +165,8 @@ msgstr "ING Lease Now"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:195
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:241
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:260
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:266
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:261
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:268
 msgid "Enable"
 msgstr "Włącz"
 
@@ -180,17 +180,19 @@ msgstr "Wskazówka"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:236
 msgid ""
-"The module requires a configuration in the imoje administration panel. <br/> "
-"Go to imoje.ing.pl and log in to the administration panel. <br/> Go to "
-"stores tab and enter the notification address in the appropriate field and "
-"copy the configuration keys. <br/> Copy the keys into the fields described "
-"below."
+"The module requires a configuration with your shop in the imoje "
+"administration panel. <br/> Go to <b><a href=\"https://imoje.ing.pl\">imoje."
+"ing.pl</a></b> and log in to the administration panel. <br/> Then go to "
+"<b>Shops>your shop name>Details>Data for integration</b> and copy "
+"<b>Merchant ID</b>, <b>Shop ID</b>, <b>Shop key</b>, <b>Authorization token</"
+"b> into the fields described below."
 msgstr ""
-"Moduł imoje wymaga konfiguracji w panelu administracyjnym imoje.<br/> Wejdź "
-"na imoje.ing.pl i zaloguj się do panelu administracyjnego.<br/> W panelu "
-"wejdź w zakładkę sklepy. Wprowadź adres notyfikacji w odpowiednim polu oraz "
-"skopiuj klucze konfiguracyjne. <br/> Skopiowane klucze wprowadź w pola "
-"opisane poniżej."
+"Moduł wymaga skonfigurowania z Twoim sklepem w panelu imoje. </br> Przejdź "
+"do <b><a href=\"https://imoje.ing.pl\">imoje.ing.pl</a></b> i zaloguj się do "
+"panelu administracyjnego. </br> Następnie przejdź do zakładki  "
+"<b>Sklepy>nazwa Twojego sklepu>Szczegóły>Dane do integracji</b> i skopiuj "
+"<b>Identyfikator klienta</b>, <b>Identyfikator sklepu</b>, <b>Klucz sklepu</"
+"b>, <b>Token autoryzacyjny</b> do poniższych pól. "
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:239
 msgid "Enable / Disable"
@@ -204,69 +206,100 @@ msgstr "Tryb sandbox"
 msgid "Enable sandbox"
 msgstr "Włącz tryb sandbox"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:251
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:249
+msgid ""
+"In order to use sandbox mode, you must create an account in a dedicated "
+"<b><a href=\"https://sandbox.imoje.ing.pl\">sandbox environment</a></b>"
+msgstr ""
+"W celu skorzystania z trybu sandbox, musisz stworzyć konto w dedykowanym "
+"<b><a href=\"https://sandbox.imoje.ing.pl\">środowisku sandbox</a></b>"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:252
 msgid "Display brand"
 msgstr "Wyświetlanie loga"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:254
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:255
 msgid "Hide brand"
 msgstr "Ukryj logo"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:257
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:258
 msgid "ING Księgowość"
 msgstr "ING Księgowość"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:263
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:262
+msgid ""
+"If you are entitled to a tax exemption and you want imoje to send the basis "
+"for the exemption to ING Księgowość, then create a new tax class with a name "
+"starting as <b>ZW_</b> and ending with one of the available values of the "
+"<b>basisForVatExemption</b> object at the following <b><a href=\"https://"
+"imojeapi.docs.apiary.io/#/introduction/ing-ksiegowosc\">link</a></b>. "
+"Example: <b>ZW_DENTAL_TECHNICAN_SERVICES</b>"
+msgstr ""
+"Jeśli przysługuje Ci zwolnienie z podatku i chcesz, aby imoje przesyłało do "
+"ING Księgowość powód zwolnienia, to stwórz nową klasę podatkową, której "
+"nazwa będzie zaczynać się jako <b>ZW_</b> i kończyć jedną z dostępnych "
+"wartości obiektu <b>basisForVatExemption</b> pod poniższym <b><a "
+"href=\"https://imojeapi.docs.apiary.io/#/introduction/ing-"
+"ksiegowosc\">linkiem</a></b>. Przykład: <b>ZW_DENTAL_TECHNICAN_SERVICES</b>"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:265
 msgid "Update method name in order details via notification"
 msgstr ""
 "Aktualizuj nazwę metody płatności w szczegółach zamówienia po notyfikacji"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:269
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:271
 msgid "Payment title"
 msgstr "Nazwa metody płatności"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:274
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:276
 msgid "Description"
 msgstr "Opis"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:276
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:278
 msgid "Text that users will see on checkout"
 msgstr "Ten tekst zobaczą użytkownicy na podsumowaniu zamówienia"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:281
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:283
 msgid "Merchant ID"
 msgstr "Identyfikator klienta"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:286
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:288
 msgid "Service ID"
 msgstr "Identyfikator sklepu"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:291
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:293
 msgid "Service Key"
 msgstr "Klucz sklepu"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:296
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:298
 msgid "Authorization token"
 msgstr "Token autoryzacyjny"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:301
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:303
 msgid "Currency"
 msgstr "Waluta"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:307
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:309
 msgid "Meta name for VAT"
 msgstr "Nazwa meta dla pola NIP"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:331
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:312
+msgid ""
+"Required if you want to use ING Księgowość and create invoices with VAT ID"
+msgstr ""
+"Wymagane jeśli chcesz korzystać z ING Księgowość i generować faktury z NIPem "
+"firmy"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:334
 msgid "Refund amount must be higher than 0"
 msgstr "Kwota zwrotu musi być większa od 0"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:456
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:472
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:459
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:475
 msgid "Transaction reference"
 msgstr "Numer referencyjny transakcji imoje"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:522
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:525
 msgid "You must insert exactly 6 numbers as BLIK code!"
 msgstr "Musisz wprowadzić dokładnie 6 cyfr jako kod BLIK!"
 
@@ -278,8 +311,8 @@ msgstr "Zła odpowiedź z API, błędy:"
 msgid "Service is inactive in imoje"
 msgstr "Sklep jest nieaktywny w imoje"
 
-#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:232
-#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:296
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:235
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:299
 msgid "No payment channel available. Choose another payment method."
 msgstr "Brak dostępnego kanału płatności. Wybierz inną metodę płatności."
 

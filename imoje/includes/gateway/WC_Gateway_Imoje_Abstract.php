@@ -233,7 +233,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 				'title'       => __( 'Hint', 'imoje' ),
 				'class'       => 'hidden',
 				'type'        => 'title',
-				'description' => __( 'The module requires a configuration in the imoje administration panel. <br/> Go to imoje.ing.pl and log in to the administration panel. <br/> Go to stores tab and enter the notification address in the appropriate field and copy the configuration keys. <br/> Copy the keys into the fields described below.', 'imoje' ),
+				'description' => __( 'The module requires a configuration with your shop in the imoje administration panel. <br/> Go to <b><a href="https://imoje.ing.pl">imoje.ing.pl</a></b> and log in to the administration panel. <br/> Then go to <b>Shops>your shop name>Details>Data for integration</b> and copy <b>Merchant ID</b>, <b>Shop ID</b>, <b>Shop key</b>, <b>Authorization token</b> into the fields described below.', 'imoje' ),
 			],
 			'enabled'                 => [
 				'title'   => __( 'Enable / Disable', 'imoje' ),
@@ -246,6 +246,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 				'type'    => 'checkbox',
 				'default' => 'no',
 				'label'   => __( 'Enable sandbox', 'imoje' ),
+				'description' => __( 'In order to use sandbox mode, you must create an account in a dedicated <b><a href="https://sandbox.imoje.ing.pl">sandbox environment</a></b>', 'imoje' ),
 			],
 			'hide_brand'              => [
 				'title'   => __( 'Display brand', 'imoje' ),
@@ -258,6 +259,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 				'type'    => 'checkbox',
 				'default' => 'no',
 				'label'   => __( 'Enable', 'imoje' ),
+				'description' => __( 'If you are entitled to a tax exemption and you want imoje to send the basis for the exemption to ING Księgowość, then create a new tax class with a name starting as <b>ZW_</b> and ending with one of the available values of the <b>basisForVatExemption</b> object at the following <b><a href="https://imojeapi.docs.apiary.io/#/introduction/ing-ksiegowosc">link</a></b>. Example: <b>ZW_DENTAL_TECHNICAN_SERVICES</b>', 'imoje' ),
 			],
 			'update_method_name'          => [
 				'title'   => __( 'Update method name in order details via notification', 'imoje' ),
@@ -307,8 +309,8 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 				'title'   => __( 'Meta name for VAT', 'imoje' ),
 				'type'    => 'text',
 				'default' => '',
+				'description' => __( 'Required if you want to use ING Księgowość and create invoices with VAT ID', 'imoje' ),
 			],
-
 		];
 	}
 
@@ -352,7 +354,6 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 
 		$order = new WC_Order( $order_id );
 
-		// Return thank you redirect
 		return [
 			'result'   => 'success',
 			'redirect' => $order->get_checkout_payment_url( true ),
