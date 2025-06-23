@@ -361,6 +361,9 @@ class Api {
 	 * @param string $blikCode
 	 * @param array  $address
 	 * @param string $cid
+	 * @param array  $invoice
+	 * @param int    $installmentsPeriod
+	 * @param string $version
 	 *
 	 * @return string
 	 */
@@ -382,7 +385,8 @@ class Api {
 		$address = [],
 		$cid = '',
 		$invoice = [],
-		$installmentsPeriod = 0
+		$installmentsPeriod = 0,
+		$version = ''
 	) {
 
 		if ( ! $clientIp ) {
@@ -407,6 +411,7 @@ class Api {
 				'email'     => $customerEmail,
 			],
 			'notificationUrl'   => $notificationUrl,
+			'version'           => $version,
 		];
 
 		if ( $blikCode ) {
@@ -450,6 +455,8 @@ class Api {
 	 * @param string $visibleMethod
 	 * @param array  $cart
 	 * @param array  $invoice
+	 * @param string $preselectMethodCode
+	 * @param string $version
 	 *
 	 * @return string
 	 */
@@ -468,7 +475,8 @@ class Api {
 		$visibleMethod = [],
 		$cart = [],
 		$invoice = [],
-		$preselectMethodCode = ''
+		$preselectMethodCode = '',
+		$version = ''
 	) {
 
 		$array = [
@@ -487,6 +495,7 @@ class Api {
 				'phone'     => $phone,
 			],
 			'notificationUrl'  => $notificationUrl,
+			'version'          => $version,
 		];
 
 		if ( $phone ) {

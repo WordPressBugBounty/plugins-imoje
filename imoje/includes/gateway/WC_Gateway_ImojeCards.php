@@ -50,7 +50,9 @@ class WC_Gateway_ImojeCards extends WC_Gateway_Imoje_Api_Abstract {
 				$this->get_option( 'ing_ksiegowosc' ),
 				true,
 				$this->get_option( 'ing_ksiegowosc_meta_tax' )
-			)
+			),
+			'',
+			$this->version
 		);
 	}
 }

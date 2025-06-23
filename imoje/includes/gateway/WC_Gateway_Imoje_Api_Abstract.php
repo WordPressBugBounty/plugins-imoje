@@ -19,10 +19,17 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	protected $imoje_service;
 
 	/**
+	 * @var string
+	 */
+	protected $version;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		parent::__construct( static::PAYMENT_METHOD_NAME );
+
+		$this->version = Helper::get_version();
 
 		$this->imoje_api = new Api(
 			$this->get_option( 'authorization_token' ),
@@ -41,16 +48,24 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 
 		$service = $this->imoje_api->getServiceInfo();
 
+		$wc_logger = wc_get_logger();
+
 		if ( ! $service['success'] ) {
-			error_log( __( 'Bad response in api, errors:', 'imoje' )
-			           . ' '
-			           . json_encode( $service ) );
+
+			$wc_logger->error( $this->get_payment_method_data( 'display_name' ) . ' | ' . __( 'Bad response in api, errors:', 'imoje' )
+			                   . ' '
+			                   . json_encode( $service ), [
+				'source' => 'imoje',
+			] );
 
 			return [];
 		}
 
 		if ( empty( $service['body']['service']['isActive'] ) ) {
-			error_log( __( 'Service is inactive in imoje', 'imoje' ) );
+
+			$wc_logger->error( __( 'Service is inactive in imoje', 'imoje' ), [
+				'source' => 'imoje',
+			] );
 
 			return [];
 		}
@@ -123,7 +138,11 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 		if ( ! ( $is_payment_link
 			? $this->verify_payment_link( $transaction )
 			: $this->verify_transaction( $transaction ) ) ) {
-			error_log( 'Could not initialize transaction: ' . json_encode( $transaction ) );
+			$wc_logger = wc_get_logger();
+
+			$wc_logger->error( $this->get_payment_method_data( 'display_name' ) . ' | ' . __( 'Could not initialize transaction: ', 'imoje' ) . json_encode( $transaction ), [
+				'source' => 'imoje',
+			] );
 
 			return [];
 		}
@@ -398,13 +417,19 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 		$customer_notice_error = __( 'Payment error. Contact with shop administrator.', 'imoje' );
 
 		$order = wc_get_order( $order_id );
+		$wc_logger = wc_get_logger();
 
 		if ( ! $order || ! $order->get_id() ) {
 
 			wc_add_notice( $customer_notice_error, 'error' );
 
+
+			$wc_logger->error( __( 'Could not get order data', 'imoje' ), [
+				'source' => 'imoje',
+			] );
+
 			return [
-				'result' => 'failure'
+				'result' => 'failure',
 			];
 		}
 
@@ -437,8 +462,12 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 
 			wc_add_notice( $customer_notice_error, 'error' );
 
+			$wc_logger->error( $this->get_payment_method_data( 'display_name' ) . ' | ' . __( 'Payment method not selected or not available', 'imoje' ), [
+				'source' => 'imoje',
+			] );
+
 			return [
-				'result' => 'failure'
+				'result' => 'failure',
 			];
 		}
 
@@ -459,8 +488,12 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 		if ( ! $transaction ) {
 			wc_add_notice( $customer_notice_error, 'error' );
 
+			$wc_logger->error( $this->get_payment_method_data( 'display_name' ) . ' | ' . __( 'Could not create an order', 'imoje' ), [
+				'source' => 'imoje',
+			] );
+
 			return [
-				'result' => 'failure'
+				'result' => 'failure',
 			];
 		}
 
@@ -474,8 +507,12 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 
 			wc_add_notice( $customer_notice_error, 'error' );
 
+			$wc_logger->error( $this->get_payment_method_data( 'display_name' ) . ' | ' . __( 'Could not redirect to payment: ', 'imoje' ) . $transaction['transaction']['paymentMethodCode'], [
+				'source' => 'imoje',
+			] );
+
 			return [
-				'result' => 'failure'
+				'result' => 'failure',
 			];
 		}
 

@@ -41,7 +41,9 @@ class WC_Gateway_ImojePaylater extends WC_Gateway_Imoje_Api_Abstract {
 			'',
 			parent::get_address_data( $order ),
 			'',
-			parent::get_invoice( $order )
+			parent::get_invoice( $order ),
+			'',
+			$this->version
 		);
 	}
 

@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce imoje
 Plugin URI: https://imoje.pl
 Description: Add payment via imoje to WooCommerce
-Version: 4.10.1
+Version: 4.11.0
 Author: imoje <kontakt.tech@imoje.pl>
 Author URI: https://imoje.pl
 Text Domain: imoje
@@ -232,7 +232,9 @@ function imoje_create_transaction_ajax() {
 			$blik_code,
 			'',
 			$cid,
-			Helper::get_invoice( $order, $options['ing_ksiegowosc'], true, $options['ing_ksiegowosc_meta_tax'] )
+			Helper::get_invoice( $order, $options['ing_ksiegowosc'], true, $options['ing_ksiegowosc_meta_tax'] ),
+			'',
+			Helper::get_version()
 		);
 	}
 

@@ -56,7 +56,8 @@ class WC_Gateway_ImojeVisa extends WC_Gateway_Imoje_Api_Abstract {
 				true,
 				$this->get_option( 'ing_ksiegowosc_meta_tax' )
 			),
-			self::PRESELECT_METHOD_CODE
+			self::PRESELECT_METHOD_CODE,
+			$this->version
 		);
 	}
 }

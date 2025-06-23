@@ -41,7 +41,9 @@ class WC_Gateway_ImojePbl extends WC_Gateway_Imoje_Api_Abstract {
 			'',
 			'',
 			'',
-			$this->get_invoice( $order )
+			$this->get_invoice( $order ),
+			'',
+			$this->version
 		);
 	}
 

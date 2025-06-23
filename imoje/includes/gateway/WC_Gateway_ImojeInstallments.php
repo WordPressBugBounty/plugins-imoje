@@ -43,7 +43,8 @@ class WC_Gateway_ImojeInstallments extends WC_Gateway_Imoje_Api_Abstract {
 			parent::get_address_data( $order ),
 			'',
 			parent::get_invoice( $order ),
-			$installments_period
+			$installments_period,
+			$this->version
 		);
 	}
 

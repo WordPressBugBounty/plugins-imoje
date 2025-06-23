@@ -142,7 +142,9 @@ class WC_Gateway_ImojeBlik extends WC_Gateway_Imoje_Api_Abstract {
 			$blik_code,
 			[],
 			'',
-			$this->get_invoice( $order )
+			$this->get_invoice( $order ),
+			'',
+			$this->version
 		);
 	}
 

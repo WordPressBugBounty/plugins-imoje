@@ -4,7 +4,7 @@ Tags: imoje, woocommerce, payments, payment gateway, checkout
 Tested up to: 6.8.1
 Requires PHP: 5.6.0
 License: GPLv2
-Stable tag: 4.10.1
+Stable tag: 4.11.0
 
 Add payment via imoje to WooCommerce
 
@@ -72,6 +72,9 @@ You can copy and enter any notification address in the imoje administration pane
 
 
 == Changelog ==
+= 4.11.0 =
+* added error logging to WooCommerce logs
+* minor fixes
 = 4.10.1 =
 * modify response on checkout when something went wrong
 = 4.10.0 =
