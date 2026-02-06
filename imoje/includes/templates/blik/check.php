@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /** @var string $imoje_transaction_id */
 /** @var string $imoje_order_return_url */
 

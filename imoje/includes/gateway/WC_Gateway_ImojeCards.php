@@ -45,7 +45,7 @@ class WC_Gateway_ImojeCards extends WC_Gateway_Imoje_Api_Abstract {
 				?: '',
 			[ Util::getPaymentMethod( 'card' ) ],
 			[],
-			Helper::get_invoice(
+			Imoje_Helper::get_invoice(
 				$order,
 				$this->get_option( 'ing_ksiegowosc' ),
 				true,

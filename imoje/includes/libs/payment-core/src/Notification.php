@@ -132,6 +132,16 @@ class Notification
 	/**
 	 * @const int
 	 */
+	const NC_INVALID_ORDER_STATUS_FOR_CANCELLATION = 24;
+
+	/**
+	 * @const int
+	 */
+	const NC_ORDER_CANCELLATION_IS_NOT_ENABLED = 25;
+
+	/**
+	 * @const int
+	 */
 	const NC_UNKNOWN = 100;
 	// endregion
 
@@ -172,6 +182,11 @@ class Notification
 	 * @const string
 	 */
 	const TRS_REJECTED = 'rejected';
+
+	/**
+	 * @const string
+	 */
+	const TRS_CANCELLED = 'cancelled';
 
 	/**
 	 * @const string
@@ -277,7 +292,16 @@ class Notification
 	 */
 	public static function checkRequestAmount($payloadDecoded, $amount, $currency)
 	{
-		return $payloadDecoded['transaction']['amount'] === $amount && $payloadDecoded['transaction']['currency'] === $currency;
+		$requestAmount = $payloadDecoded['transaction']['amount'];
+		$requestCurrency = $payloadDecoded['transaction']['currency'];
+
+		if ( !isset($payloadDecoded['transaction']) ) {
+
+			$requestAmount = $payloadDecoded['payment']['amount'];
+			$requestCurrency = $payloadDecoded['payment']['currency'];
+		}
+
+		return $requestAmount === $amount && $requestCurrency === $currency;
 	}
 
 	/**
@@ -329,7 +353,7 @@ class Notification
 
 		$payloadDecoded = json_decode($payload, true);
 
-		if($payloadDecoded['transaction']['serviceId'] !== $this->serviceId) {
+		if($payloadDecoded['payment']['serviceId'] !== $this->serviceId) {
 
 			return self::NC_SERVICE_ID_NOT_MATCH;
 		}

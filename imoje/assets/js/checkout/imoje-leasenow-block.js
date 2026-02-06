@@ -1,0 +1,37 @@
+function registerImojeLeasenowPaymentMethod() {
+	const ImojeLeasenowPaymentElement = React.createElement(
+		'div',
+		{
+			class: imojePaymentMethodContainerClass,
+		},
+		React.createElement(
+			'div',
+			{
+				class: `${imojePaymentMethodContainerClass}__title`,
+			},
+			imoje_leasenow_js_object.settings_leasenow.description,
+		),
+	);
+
+	wc.wcBlocksRegistry.registerPaymentMethod({
+		name:           imoje_leasenow_js_object.name_leasenow,
+		label:          React.createElement(
+			'span',
+			{
+				class: imojeBlockCheckoutHeaderClass,
+			},
+			imoje_leasenow_js_object.settings_leasenow.title,
+			imoje_leasenow_js_object.logo_leasenow && !isEnabled(imoje_leasenow_js_object.settings_leasenow.hide_brand) &&
+			React.createElement('img', {
+				src: imoje_leasenow_js_object.logo_leasenow,
+				alt: imoje_leasenow_js_object.name_leasenow,
+			}),
+		),
+		ariaLabel:      imoje_leasenow_js_object.name_leasenow,
+		edit:           ImojeLeasenowPaymentElement,
+		content:        ImojeLeasenowPaymentElement,
+		canMakePayment: imojeCanMakePayment(imoje_leasenow_js_object.settings_leasenow),
+	});
+}
+
+registerImojeLeasenowPaymentMethod();

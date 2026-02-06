@@ -3,19 +3,14 @@
 use Imoje\Payment\Util;
 
 /**
- * Class WC_Gateway_ImojeVisa
+ * Class WC_Gateway_ImojeWt
  */
-class WC_Gateway_ImojeVisa extends WC_Gateway_Imoje_Api_Abstract {
+class WC_Gateway_ImojeWt extends WC_Gateway_Imoje_Api_Abstract {
 
 	/**
 	 *
 	 */
-	const PAYMENT_METHOD_NAME = 'imoje_visa';
-
-	/**
-	 *
-	 */
-	const PRESELECT_METHOD_CODE = 'visa_mobile';
+	const PAYMENT_METHOD_NAME = 'imoje_wt';
 
 	/**
 	 * @inheritDoc
@@ -38,7 +33,7 @@ class WC_Gateway_ImojeVisa extends WC_Gateway_Imoje_Api_Abstract {
 			$order->get_total(),
 			$order->get_currency(),
 			$order->get_id(),
-			wc_get_checkout_url(),
+			$return_url,
 			$return_url,
 			$return_url,
 
@@ -48,7 +43,7 @@ class WC_Gateway_ImojeVisa extends WC_Gateway_Imoje_Api_Abstract {
 			self::get_notification_url(),
 			$order->get_billing_phone()
 				?: '',
-			[ Util::getPaymentMethod( 'wallet' ) ],
+			[ Util::getPaymentMethod( 'wt' ) ],
 			Imoje_Helper::get_lease_now( $order, $this->get_option( 'ing_lease_now' ), true ),
 			Imoje_Helper::get_invoice(
 				$order,
@@ -56,7 +51,7 @@ class WC_Gateway_ImojeVisa extends WC_Gateway_Imoje_Api_Abstract {
 				true,
 				$this->get_option( 'ing_ksiegowosc_meta_tax' )
 			),
-			self::PRESELECT_METHOD_CODE,
+			'',
 			$this->version
 		);
 	}

@@ -97,6 +97,8 @@ class Util {
 		'ing'                => 'ing',
 		'imoje_installments' => 'imoje_installments',
 		'wallet'             => 'wallet',
+		'wt'                 => 'wt',
+		'lease'              => 'lease'
 	];
 
 	/**
@@ -138,6 +140,9 @@ class Util {
 		'inbank_0'       => 'inbank_0',
 		'applepay'       => 'applepay',
 		'gpay'           => 'gpay',
+		'wt'             => 'wt',
+		'wt_split'       => 'wt_split',
+		'lease_now'      => 'lease_now',
 	];
 
 	/**

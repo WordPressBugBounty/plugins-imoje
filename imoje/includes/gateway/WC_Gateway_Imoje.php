@@ -51,8 +51,8 @@ class WC_Gateway_Imoje extends WC_Gateway_Imoje_Api_Abstract {
 			$order->get_billing_phone()
 				?: '',
 			[],
-			Helper::get_lease_now( $order, $this->get_option( 'ing_lease_now' ), true ),
-			Helper::get_invoice(
+			Imoje_Helper::get_lease_now( $order, $this->get_option( 'ing_lease_now' ), true ),
+			Imoje_Helper::get_invoice(
 				$order,
 				$this->get_option( 'ing_ksiegowosc' ),
 				true,

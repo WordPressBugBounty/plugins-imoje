@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2025-05-14 15:02+0200\n"
-"PO-Revision-Date: 2025-05-14 15:02+0200\n"
+"POT-Creation-Date: 2025-12-09 14:25+0100\n"
+"PO-Revision-Date: 2025-12-09 14:37+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pl_PL\n"
@@ -11,59 +11,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.8\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;esc_html__;esc_html_e\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: includes/Helper.php:401 includes/gateway/WC_Gateway_Imoje_Abstract.php:420
+#: includes/Imoje_Helper.php:401
 #, php-format
 msgid "Refund for amount %s with UUID %s has been correctly processed."
 msgstr "Zwrot na kwotę %s z identyfikatorem %s został poprawnie przetworzony."
 
-#: includes/Helper.php:416
+#: includes/Imoje_Helper.php:416
 #, php-format
 msgid "Refund for amount %s with UUID %s has been requested"
 msgstr "Zwrot na kwotę %s z identyfikatorem %s został zlecony"
 
-#: includes/Helper.php:422
+#: includes/Imoje_Helper.php:422
 msgid "A refund has been requested and waiting for completion."
 msgstr ""
 "Złożono wniosek o zwrot pieniędzy i trwa oczekiwanie na jego rozpatrzenie."
 
-#: includes/Helper.php:433
+#: includes/Imoje_Helper.php:433
 msgid "Refund error: "
 msgstr "Błąd zwrotu: "
 
-#: includes/Helper.php:436
+#: includes/Imoje_Helper.php:436
 msgid "Refund error."
 msgstr "Błąd zwrotu."
 
-#: includes/Helper.php:448
+#: includes/Imoje_Helper.php:448
 #, php-format
 msgid "The payment method is available for transactions %s %s %s"
 msgstr "Metoda płatności jest dostępna dla transakcji %s %s %s"
 
-#: includes/Helper.php:450
+#: includes/Imoje_Helper.php:450
 msgid "above"
 msgstr "powyżej"
 
-#: includes/Helper.php:451
+#: includes/Imoje_Helper.php:451
 msgid "below"
 msgstr "poniżej"
 
 #: includes/gateway/WC_Gateway_ImojeBlik.php:45
-#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:398
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:422
 msgid "Payment error. Contact with shop administrator."
 msgstr "Spróbuj ponownie później lub skontaktuj się z obsługą sklepu."
 
-#: includes/gateway/WC_Gateway_ImojeBlik.php:165
+#: includes/gateway/WC_Gateway_ImojeBlik.php:175
 msgid "Display field"
 msgstr "Wyświetlaj pole"
 
-#: includes/gateway/WC_Gateway_ImojeBlik.php:168
+#: includes/gateway/WC_Gateway_ImojeBlik.php:178
 msgid "Display field on the checkout"
 msgstr "Wyświetlanie pola BLIK na stronie sklepu"
+
+#: includes/gateway/WC_Gateway_ImojeLeasenow.php:21
+msgid "Insert 0 if you want to disable"
+msgstr "Wprowadź 0 jeżeli chcesz wyłączyć"
+
+#: includes/gateway/WC_Gateway_ImojeLeasenow.php:27
+msgid "Scale image as percentage on product list"
+msgstr "Rozmiar obrazka w procentach na liście produktów"
+
+#: includes/gateway/WC_Gateway_ImojeLeasenow.php:28
+msgid "Scale image as percentage on product page"
+msgstr "Rozmiar obrazka w procentach na stronie produktu"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:65
 msgid "imoje payments"
@@ -78,8 +90,8 @@ msgid "BLIK"
 msgstr "BLIK"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:99
-msgid "Pay with BLIK via imoje."
-msgstr "Płać z BLIK z imoje."
+msgid "Pay with BLIK via imoje"
+msgstr "Płać z BLIK z imoje"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:103
 msgid "imoje - cards"
@@ -90,8 +102,8 @@ msgid "Payment cards"
 msgstr "Karty płatnicze"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:105
-msgid "Pay with card via imoje."
-msgstr "Płać kartą płatniczą z imoje."
+msgid "Pay with card via imoje"
+msgstr "Płać kartą płatniczą z imoje"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:109
 msgid "imoje - Paywall"
@@ -102,8 +114,8 @@ msgid "Simple and easy online payments"
 msgstr "Proste i łatwe płatności online"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:111
-msgid "You will be redirected to a payment method selection page."
-msgstr "Nastąpi przekierowanie do strony wyboru metody płatności."
+msgid "You will be redirected to a payment method selection page"
+msgstr "Nastąpi przekierowanie do strony wyboru metody płatności"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:115
 msgid "imoje - PBL"
@@ -123,8 +135,8 @@ msgid "imoje - pay later"
 msgstr "imoje - płacę później"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:123
-msgid "Buy now, pay later via imoje."
-msgstr "Kup teraz, zapłać później z imoje."
+msgid "Buy now, pay later via imoje"
+msgstr "Kup teraz, zapłać później z imoje"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:127
 msgid "imoje - Visa Mobile"
@@ -135,7 +147,7 @@ msgid "Visa Mobile"
 msgstr "Visa Mobile"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:129
-msgid "Visa Mobile payment with imoje "
+msgid "Visa Mobile payment with imoje."
 msgstr "Płać Visa Mobile z imoje"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:133
@@ -156,36 +168,61 @@ msgid "Electronic wallet"
 msgstr "Portfel elektroniczny"
 
 #: includes/gateway/WC_Gateway_Imoje_Abstract.php:141
-msgid "Pay with electronic wallet via imoje."
+msgid "Pay with electronic wallet via imoje"
 msgstr "Płać portfelem elektronicznym z imoje"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:192
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:145
+msgid "imoje - wire transfer"
+msgstr "imoje - przelew tradycyjny"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:146
+msgid "Wire transfer"
+msgstr "Przelew tradycyjny"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:147
+msgid "Wire transfer payment with imoje"
+msgstr "Zapłać przelewem tradycyjnym z imoje"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:151
+msgid "imoje - Lease Now"
+msgstr "imoje - Lease Now"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:152
+msgid "Lease Now"
+msgstr "Lease Now"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:153
+msgid "Pay with Lease Now via imoje"
+msgstr "Płać z Lease Now przez imoje"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:204
 msgid "ING Lease Now"
 msgstr "ING Lease Now"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:195
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:241
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:261
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:268
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:207
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:253
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:273
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:280
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:286
 msgid "Enable"
 msgstr "Włącz"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:228
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:240
 msgid "Sandbox is enabled"
 msgstr "Tryb sandbox jest włączony"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:233
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:245
 msgid "Hint"
 msgstr "Wskazówka"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:236
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:248
 msgid ""
 "The module requires a configuration with your shop in the imoje "
-"administration panel. <br/> Go to <b><a href=\"https://imoje.ing.pl\">imoje."
-"ing.pl</a></b> and log in to the administration panel. <br/> Then go to "
-"<b>Shops>your shop name>Details>Data for integration</b> and copy "
-"<b>Merchant ID</b>, <b>Shop ID</b>, <b>Shop key</b>, <b>Authorization token</"
-"b> into the fields described below."
+"administration panel. <br/> Go to <b><a href=\"https://"
+"imoje.ing.pl\">imoje.ing.pl</a></b> and log in to the administration panel. "
+"<br/> Then go to <b>Shops>your shop name>Details>Data for integration</b> "
+"and copy <b>Merchant ID</b>, <b>Shop ID</b>, <b>Shop key</b>, "
+"<b>Authorization token</b> into the fields described below."
 msgstr ""
 "Moduł wymaga skonfigurowania z Twoim sklepem w panelu imoje. </br> Przejdź "
 "do <b><a href=\"https://imoje.ing.pl\">imoje.ing.pl</a></b> i zaloguj się do "
@@ -194,19 +231,19 @@ msgstr ""
 "<b>Identyfikator klienta</b>, <b>Identyfikator sklepu</b>, <b>Klucz sklepu</"
 "b>, <b>Token autoryzacyjny</b> do poniższych pól. "
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:239
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:251
 msgid "Enable / Disable"
 msgstr "Włącz / Wyłącz"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:245
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:257
 msgid "Sandbox"
 msgstr "Tryb sandbox"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:248
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:260
 msgid "Enable sandbox"
 msgstr "Włącz tryb sandbox"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:249
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:261
 msgid ""
 "In order to use sandbox mode, you must create an account in a dedicated "
 "<b><a href=\"https://sandbox.imoje.ing.pl\">sandbox environment</a></b>"
@@ -214,19 +251,19 @@ msgstr ""
 "W celu skorzystania z trybu sandbox, musisz stworzyć konto w dedykowanym "
 "<b><a href=\"https://sandbox.imoje.ing.pl\">środowisku sandbox</a></b>"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:252
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:264
 msgid "Display brand"
 msgstr "Wyświetlanie loga"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:255
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:267
 msgid "Hide brand"
 msgstr "Ukryj logo"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:258
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:270
 msgid "ING Księgowość"
 msgstr "ING Księgowość"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:262
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:274
 msgid ""
 "If you are entitled to a tax exemption and you want imoje to send the basis "
 "for the exemption to ING Księgowość, then create a new tax class with a name "
@@ -242,96 +279,130 @@ msgstr ""
 "href=\"https://imojeapi.docs.apiary.io/#/introduction/ing-"
 "ksiegowosc\">linkiem</a></b>. Przykład: <b>ZW_DENTAL_TECHNICAN_SERVICES</b>"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:265
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:277
 msgid "Update method name in order details via notification"
 msgstr ""
 "Aktualizuj nazwę metody płatności w szczegółach zamówienia po notyfikacji"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:271
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:283
+msgid "Allow order to be cancelled via notification"
+msgstr "Zezwól na anulowanie zamówienia po notyfikacji"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:289
 msgid "Payment title"
 msgstr "Nazwa metody płatności"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:276
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:294
 msgid "Description"
 msgstr "Opis"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:278
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:296
 msgid "Text that users will see on checkout"
 msgstr "Ten tekst zobaczą użytkownicy na podsumowaniu zamówienia"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:283
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:301
 msgid "Merchant ID"
 msgstr "Identyfikator klienta"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:288
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:306
 msgid "Service ID"
 msgstr "Identyfikator sklepu"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:293
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:311
 msgid "Service Key"
 msgstr "Klucz sklepu"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:298
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:316
 msgid "Authorization token"
 msgstr "Token autoryzacyjny"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:303
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:321
 msgid "Currency"
 msgstr "Waluta"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:309
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:327
 msgid "Meta name for VAT"
 msgstr "Nazwa meta dla pola NIP"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:312
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:330
 msgid ""
 "Required if you want to use ING Księgowość and create invoices with VAT ID"
 msgstr ""
 "Wymagane jeśli chcesz korzystać z ING Księgowość i generować faktury z NIPem "
 "firmy"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:334
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:351
 msgid "Refund amount must be higher than 0"
 msgstr "Kwota zwrotu musi być większa od 0"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:459
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:475
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:443
+#, php-format
+msgid "Refund for amount %1$s with UUID %2$s has been correctly processed."
+msgstr ""
+"Zwrot na kwotę %1$s z identyfikatorem %2$s został poprawnie przetworzony."
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:482
 msgid "Transaction reference"
 msgstr "Numer referencyjny transakcji imoje"
 
-#: includes/gateway/WC_Gateway_Imoje_Abstract.php:525
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:498
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:518
+msgid "Payment reference"
+msgstr "Numer referencyjny płatności imoje"
+
+#: includes/gateway/WC_Gateway_Imoje_Abstract.php:568
 msgid "You must insert exactly 6 numbers as BLIK code!"
 msgstr "Musisz wprowadzić dokładnie 6 cyfr jako kod BLIK!"
 
-#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:45
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:59
 msgid "Bad response in api, errors:"
 msgstr "Zła odpowiedź z API, błędy:"
 
-#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:53
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:70
 msgid "Service is inactive in imoje"
 msgstr "Sklep jest nieaktywny w imoje"
 
-#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:235
-#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:299
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:147
+msgid "Could not initialize transaction: "
+msgstr "Transakcja nie mogła zostać zainicjowana, błędy: "
+
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:258
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:322
 msgid "No payment channel available. Choose another payment method."
 msgstr "Brak dostępnego kanału płatności. Wybierz inną metodę płatności."
 
-#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:77
-#: includes/templates/regulation.php:17
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:431
+msgid "Could not get order data"
+msgstr "Nie udało się uzyskać danych zamówienia"
+
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:469
+msgid "Payment method not selected or not available"
+msgstr "Kanał płatności nie jest dostępny"
+
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:495
+msgid "Could not create an order"
+msgstr "Nie udało się utworzyć zamówienia"
+
+#: includes/gateway/WC_Gateway_Imoje_Api_Abstract.php:514
+msgid "Could not redirect to payment: "
+msgstr "Nie udało się przekierować do płatności: "
+
+#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:79
+#: includes/templates/regulation.php:21
 msgid "Regulations of imoje"
 msgstr "Regulamin imoje"
 
-#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:78
-#: includes/templates/regulation.php:22
+#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:80
+#: includes/templates/regulation.php:26
 msgid "Information on personal data imoje"
 msgstr "Informację o danych osobowych imoje"
 
-#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:79
+#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:81
 msgid "I declare that I have read and accept {regulation} and {iodo}."
 msgstr "Oświadczam, że zapoznałem się i akceptuję {regulation} i {iodo}."
 
-#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:81
-#: includes/templates/payment_method_list.php:14
+#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:83
+#: includes/templates/payment_method_list.php:18
 msgid ""
 "Choose payment channel if is available. In other way choose another payment "
 "method"
@@ -339,11 +410,11 @@ msgstr ""
 "Wybierz kanał płatności, jeśli jest dostępny. W przeciwnym razie wybierz "
 "inną metodę płatności"
 
-#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:111
+#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:113
 msgid "Enter the correct 6-digit BLIK code."
 msgstr "Wprowadź prawidłowy 6-cyfrowy kod BLIK."
 
-#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:169
+#: includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php:171
 #: includes/templates/twisto/regulation.php:10
 msgid ""
 "I agree to provide Twisto S.A. with my transaction details in the imoje "
@@ -352,141 +423,139 @@ msgstr ""
 "Wyrażam zgodę na przekazanie Twisto S.A. moich danych transakcji w bramce "
 "płatności imoje w celu przedstawienia oferty finansowania moich zakupów."
 
-#: includes/templates/blik/check.php:14
+#: includes/templates/blik/check.php:18
 msgid "Now accept payment in your application."
 msgstr "Teraz zaakceptuj płatność w swojej aplikacji bankowej."
 
-#: includes/templates/blik/check.php:71
+#: includes/templates/blik/check.php:75
 msgid "Something went wrong. Please contact with shop staff"
 msgstr "Coś poszło nie tak. Prosimy o kontakt z obsługą sklepu"
 
-#: includes/templates/blik/check.php:92
+#: includes/templates/blik/check.php:96
 msgid "Response timed out. Create new order or contact with shop staff."
 msgstr ""
 "Czas odpowiedzi został przekroczony. Utwórz nowe zamówienie lub skontaktuj "
 "się z obsługą sklepu."
 
-#: includes/templates/blik/check.php:110
+#: includes/templates/blik/check.php:114
 msgid ""
 "Your payment was correctly processed, you will be informed about next steps."
 msgstr ""
 "Twoja płatność została poprawnie przeprocesowana. Zostaniesz poinformowany o "
 "następnych krokach."
 
-#: includes/templates/payment_method_list.php:31
+#: includes/templates/payment_method_list.php:35
 msgid "Payment channel is not available."
 msgstr "Kanał płatności nie jest dostępny."
 
-#: includes/templates/regulation.php:13
+#: includes/templates/regulation.php:17
 #, php-format
-msgid "I declare that I have read and accept the %s and %s."
-msgstr "Oświadczam, że zapoznałem się i akceptuję %s i %s."
+msgid "I declare that I have read and accept the %1$s and %2$s."
+msgstr "Oświadczam, że zapoznałem się i akceptuję %1$s i %2$s."
 
-#: includes/templates/unavailable_payment_method.php:12
+#: includes/templates/unavailable_payment_method.php:15
 msgid "Payment method is unavailable, please select another one."
 msgstr "Metoda płatności jest niedostępna, wybierz inną."
 
-#: woocommerce-imoje.php:247
+#: woocommerce-imoje.php:263
 msgid "Transaction could not be initialized, error: "
 msgstr "Transakcja nie mogła zostać zainicjowana, błędy: "
 
-#: woocommerce-imoje.php:424
+#: woocommerce-imoje.php:441
 msgid "Insert BLIK code."
 msgstr "Wprowadź kod BLIK."
 
-#: woocommerce-imoje.php:425
+#: woocommerce-imoje.php:442
 msgid "Please try again."
 msgstr "Proszę spróbować ponownie."
 
-#: woocommerce-imoje.php:429 woocommerce-imoje.php:488
+#: woocommerce-imoje.php:446 woocommerce-imoje.php:505
 msgid "Payment failed."
 msgstr "Płatność nieudana."
 
-#: woocommerce-imoje.php:431
+#: woocommerce-imoje.php:448
 msgid ""
 "Technical break in your bank. Pay later or use another bank's application."
 msgstr ""
 "Przerwa techniczna w Twoim banku. Zapłać później lub skorzystaj z aplikacji "
 "innego banku."
 
-#: woocommerce-imoje.php:433
+#: woocommerce-imoje.php:450
 msgid "Alias not found. To proceed the payment you need to pay with BLIK code."
 msgstr ""
 "Alias nie został znaleziony. Aby kontynuować płatność należy zapłacić kodem "
 "BLIK."
 
-#: woocommerce-imoje.php:436
+#: woocommerce-imoje.php:453
 msgid "Alias declined. To proceed the payment you need to pay with BLIK code."
 msgstr ""
 "Alias został odrzucony. Aby kontynuować płatność należy zapłacić kodem BLIK."
 
-#: woocommerce-imoje.php:438
+#: woocommerce-imoje.php:455
 msgid "You have entered wrong BLIK code."
 msgstr "Wprowadziłeś błędny kod BLIK."
 
-#: woocommerce-imoje.php:441
+#: woocommerce-imoje.php:458
 msgid "BLIK code expired."
 msgstr "Kod BLIK stracił ważność."
 
-#: woocommerce-imoje.php:445
+#: woocommerce-imoje.php:462
 msgid "Something went wrong with BLIK code."
 msgstr "Coś poszło nie tak z kodem BLIK."
 
-#: woocommerce-imoje.php:448
+#: woocommerce-imoje.php:465
 msgid "Payment declined at the banking application."
 msgstr "Płatność została odrzucona w aplikacji bankowej."
 
-#: woocommerce-imoje.php:452
+#: woocommerce-imoje.php:469
 msgid "Payment failed - not confirmed on time in the banking application."
 msgstr ""
 "Płatność nie powiodła się - nie potwierdzono na czas w aplikacji bankowej."
 
-#: woocommerce-imoje.php:455
+#: woocommerce-imoje.php:472
 msgid "Inserted wrong PIN code in banking application."
 msgstr "Wprowadzono błędny kod PIN w aplikacji bankowej."
 
-#: woocommerce-imoje.php:458
+#: woocommerce-imoje.php:475
 msgid "Payment failed (security)."
 msgstr "Płatność nie powiodła się (bezpieczeństwo)."
 
-#: woocommerce-imoje.php:461
+#: woocommerce-imoje.php:478
 msgid "Limit exceeded in your banking application."
 msgstr "Przekroczono limit w Twojej aplikacji bankowej."
 
-#: woocommerce-imoje.php:464
+#: woocommerce-imoje.php:481
 msgid "Insufficient funds in your bank account."
 msgstr "Niewystarczające środki na Twoim koncie bankowym."
 
-#: woocommerce-imoje.php:467
+#: woocommerce-imoje.php:484
 msgid "Issuer declined."
 msgstr "Odmowa issuera."
 
-#: woocommerce-imoje.php:470
+#: woocommerce-imoje.php:487
 msgid "Transaction not found."
 msgstr "Transakcja nie została znaleziona."
 
-#: woocommerce-imoje.php:473
+#: woocommerce-imoje.php:490
 msgid "Bad IBAN."
 msgstr "Zły IBAN."
 
-#: woocommerce-imoje.php:476
+#: woocommerce-imoje.php:493
 msgid "Transfer not possible."
 msgstr "Transfer nie jest możliwy."
 
-#: woocommerce-imoje.php:479
+#: woocommerce-imoje.php:496
 msgid "Return late."
 msgstr "Zwrot za późno."
 
-#: woocommerce-imoje.php:482
+#: woocommerce-imoje.php:499
 msgid "Return amount exceeded."
 msgstr "Przekroczona kwota zwrotu."
 
-#: woocommerce-imoje.php:485
+#: woocommerce-imoje.php:502
 msgid "Transfer late."
 msgstr "Transfer za późno."
 
-#~ msgid "Debug mode"
-#~ msgstr "Tryb debugowania"
-
-#~ msgid "Enable debug mode"
-#~ msgstr "Włącz tryb debugowania"
+#: woocommerce-imoje.php:537
+msgid "Inserted invalid credentials"
+msgstr "Wprowadzono nieprawidłowe dane autoryzacyjne"

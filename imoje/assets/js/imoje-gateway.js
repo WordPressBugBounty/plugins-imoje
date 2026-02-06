@@ -130,7 +130,7 @@
 			return;
 		}
 
-		var installmentsData = $wraper.data();
+		const installmentsData = $wraper.data();
 
 		document.getElementById('imoje-installments__wrapper').imojeInstallments({
 				amount:     installmentsData.installmentsAmount,
@@ -149,5 +149,15 @@
 			show_installments_widget();
 		}
 	});
+
+	$body.on(
+		"updated_checkout",
+		function () {
+			if ($('#payment_method_imoje_installments').is(':checked')) {
+				show_installments_widget();
+			}
+
+		}
+	)
 
 })(jQuery);

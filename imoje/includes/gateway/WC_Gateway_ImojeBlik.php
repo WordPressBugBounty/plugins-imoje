@@ -29,7 +29,7 @@ class WC_Gateway_ImojeBlik extends WC_Gateway_Imoje_Api_Abstract {
 			] );
 		}
 
-		$this->blik0 = Helper::check_is_config_value_selected( $this->get_option( 'view_field' ) );
+		$this->blik0 = Imoje_Helper::check_is_config_value_selected( $this->get_option( 'view_field' ) );
 	}
 
 	/**

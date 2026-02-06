@@ -26,6 +26,38 @@ class Validate
 			'type'       => 'object',
 			'properties' => [
 
+				'payment' => [
+					'type'       => 'object',
+					'properties' => [
+
+						'amount'   => [
+							'type'             => 'integer',
+							'minimum'          => 0,
+							'exclusiveMinimum' => true,
+						],
+						'status'   => [
+							'type' => 'string',
+							'enum' => array_values(Util::getTransactionStatuses()),
+						],
+						'orderId' => [
+							'type' => 'string'
+						],
+						'currency' => [
+							'type' => 'string',
+							'enum' => array_values(Util::getSupportedCurrencies()),
+						],
+						'serviceId' => [
+						'type' => 'string'
+						]
+					],
+					'required' => [
+						'amount',
+						'status',
+						'orderId',
+						'currency',
+						'serviceId'
+					]
+				],
 				'transaction' => [
 					'type'       => 'object',
 					'properties' => [
@@ -70,7 +102,7 @@ class Validate
 
 			],
 			'required'   => [
-				'transaction',
+				'payment',
 			],
 
 		];

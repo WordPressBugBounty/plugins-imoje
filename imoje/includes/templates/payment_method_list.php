@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /** @var array $payment_method_list_active */
 /** @var array $payment_method_list_no_active */
 /** @var bool $is_blik */
@@ -39,7 +43,7 @@ $payment_method_list = array_merge( $payment_method_list_active, $payment_method
 
 					    $need_extra = $payment_method['limit'] === 1;
 
-					    $payment_method_title = Helper::get_tooltip_payment_channel( $payment_method );
+					    $payment_method_title = Imoje_Helper::get_tooltip_payment_channel( $payment_method );
 				    }
 			    }
 
@@ -50,7 +54,7 @@ $payment_method_list = array_merge( $payment_method_list_active, $payment_method
 			    ?>">
 				<label class="imoje-c-<?php echo $payment_method['is_available']
 					? 'active'
-					: 'no-active' ?><?= $is_default_blik
+					: 'no-active' ?><?php echo $is_default_blik
 					? ' imoje-active'
 					: '' ?>">
 					<input type="radio"

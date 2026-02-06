@@ -29,7 +29,7 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	public function __construct() {
 		parent::__construct( static::PAYMENT_METHOD_NAME );
 
-		$this->version = Helper::get_version();
+		$this->version = Imoje_Helper::get_version();
 
 		$this->imoje_api = new Api(
 			$this->get_option( 'authorization_token' ),
@@ -45,6 +45,10 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	 * @return array
 	 */
 	protected function get_service_active() {
+
+		if ( $this->enabled === 'no' ) {
+			return [];
+		}
 
 		$service = $this->imoje_api->getServiceInfo();
 
@@ -80,7 +84,7 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	 */
 	protected function verify_transaction( $transaction ) {
 
-		if ( Helper::check_is_config_value_selected( $this->get_option( 'view_field' ) ) ) {
+		if ( Imoje_Helper::check_is_config_value_selected( $this->get_option( 'view_field' ) ) ) {
 			return isset( $transaction['success'] )
 			       && $transaction['success'];
 		}
@@ -116,7 +120,7 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	protected function create_transaction_and_process_order( $order, $payment_method, $payment_method_channel, $empty_cart = false, $installments_period = 0 ) {
 
 		$is_payment_link = in_array( $this->payment_method_name,
-			Helper::get_payment_methods_for_payment_link()
+			Imoje_Helper::get_payment_methods_for_payment_link()
 		);
 
 		// check if transaction should be payment link or direct transaction
@@ -251,7 +255,7 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 				$total = $order->get_total();
 			} else {
 				$this->render_unavailable_template(
-					__( 'No payment channel available. Choose another payment method.' )
+					__( 'No payment channel available. Choose another payment method.', 'imoje' )
 				);
 
 				return false;
@@ -261,7 +265,7 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 		$pm_blik = Util::getPaymentMethod( 'blik' );
 
 		if ( in_array( $pm_blik, $pm )
-		     && Helper::check_is_config_value_selected( $this->get_option( 'view_field' ) ) ) {
+		     && Imoje_Helper::check_is_config_value_selected( $this->get_option( 'view_field' ) ) ) {
 
 			foreach ( $this->imoje_service['paymentMethods'] as $payment_method ) {
 
@@ -271,7 +275,7 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 						$total ) ) {
 
 					$this->render_unavailable_template(
-						Helper::get_tooltip_payment_channel(
+						Imoje_Helper::get_tooltip_payment_channel(
 							$this->get_payment_channel_to_array( $payment_method, $total )
 						) );
 
@@ -315,7 +319,7 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 
 		if ( ! $payment_method_list_online && ! $payment_method_list_no_online ) {
 			$this->render_unavailable_template(
-				__( 'No payment channel available. Choose another payment method.' )
+				__( 'No payment channel available. Choose another payment method.', 'imoje' )
 			);
 
 			return false;
@@ -414,15 +418,15 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	 * @return array|bool
 	 */
 	public function process_payment( $order_id ) {
+
 		$customer_notice_error = __( 'Payment error. Contact with shop administrator.', 'imoje' );
 
-		$order = wc_get_order( $order_id );
+		$order     = wc_get_order( $order_id );
 		$wc_logger = wc_get_logger();
 
 		if ( ! $order || ! $order->get_id() ) {
 
 			wc_add_notice( $customer_notice_error, 'error' );
-
 
 			$wc_logger->error( __( 'Could not get order data', 'imoje' ), [
 				'source' => 'imoje',
@@ -449,7 +453,7 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 		$post_selected_channel = explode( '-', $post_imoje_selected_channel );
 
 		if ( ! in_array( $this->payment_method_name,
-				array_merge( Helper::get_payment_methods_for_payment_link(), [
+				array_merge( Imoje_Helper::get_payment_methods_for_payment_link(), [
 					WC_Gateway_ImojeInstallments::PAYMENT_METHOD_NAME => WC_Gateway_ImojeInstallments::PAYMENT_METHOD_NAME,
 				] )
 			)
@@ -551,6 +555,7 @@ abstract class WC_Gateway_Imoje_Api_Abstract extends WC_Gateway_Imoje_Abstract {
 	 * @return array
 	 */
 	protected function prepare_payment_methods_block_checkout( $payment_method_name ) {
+
 		$child_payment_method_name = static::PAYMENT_METHOD_NAME;
 		$settings                  = get_option( "woocommerce_" . $child_payment_method_name . "_settings" );
 		$currencies                = ( is_array( $settings ) && isset( $settings['currencies'] ) )

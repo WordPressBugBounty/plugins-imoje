@@ -1,19 +1,26 @@
 <?php
 /*
-Plugin Name: WooCommerce imoje
+Plugin Name: imoje
 Plugin URI: https://imoje.pl
 Description: Add payment via imoje to WooCommerce
-Version: 4.11.0
+Version: 4.15.1
 Author: imoje <kontakt.tech@imoje.pl>
 Author URI: https://imoje.pl
 Text Domain: imoje
+License: GPLv3
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Imoje\Payment\Api;
 use Imoje\Payment\Util;
 use Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils;
 
-const WOOCOMMERCE_IMOJE_PLUGIN_DIR = __FILE__;
+const WOOCOMMERCE_IMOJE_PLUGIN_FILE_DIR = __FILE__;
+define( 'WOOCOMMERCE_IMOJE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WOOCOMMERCE_IMOJE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 add_action( 'plugins_loaded', 'imoje_init_woocommerce_gateway', 0 );
@@ -29,13 +36,13 @@ function imoje_init_woocommerce_gateway() {
 
 	$pathToAutoload = __DIR__ . "/includes/libs/payment-core/vendor/autoload.php";
 
-	if (file_exists($pathToAutoload)) {
+	if ( file_exists( $pathToAutoload ) ) {
 		include_once $pathToAutoload;
 	} else {
 		include_once __DIR__ . "/includes/libs/Payment-core/vendor/autoload.php";
 	}
 
-	@include_once __DIR__ . "/includes/Helper.php";
+	@include_once __DIR__ . "/includes/Imoje_Helper.php";
 
 	load_plugin_textdomain( 'imoje', false, dirname( plugin_basename( __FILE__ ) ) . '/langs/' );
 
@@ -44,12 +51,12 @@ function imoje_init_woocommerce_gateway() {
 	require_once( 'includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php' );
 
 	foreach ( imoje_get_gateways() as $method ) {
-		require_once( sprintf( 'includes/gateway/%s.php', $method ) );
+		require_once( sprintf( 'includes/gateway/%1$s.php', $method ) );
 	}
 
 	add_action( 'before_woocommerce_init', function () {
 		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', __FILE__, true );
+			FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', __FILE__ );
 		}
 	} );
 
@@ -66,15 +73,20 @@ function imoje_init_woocommerce_gateway() {
  * @return string[]
  */
 function imoje_get_gateways() {
+
+	$prefix = 'WC_Gateway_';
+
 	return [
-		'WC_Gateway_ImojeBlik',
-		'WC_Gateway_Imoje',
-		'WC_Gateway_ImojePaylater',
-		'WC_Gateway_ImojeCards',
-		'WC_Gateway_ImojePbl',
-		'WC_Gateway_ImojeVisa',
-		'WC_Gateway_ImojeInstallments',
-		'WC_Gateway_ImojeWallet',
+		$prefix . 'ImojeBlik',
+		$prefix . 'Imoje',
+		$prefix . 'ImojePaylater',
+		$prefix . 'ImojeCards',
+		$prefix . 'ImojePbl',
+		$prefix . 'ImojeVisa',
+		$prefix . 'ImojeInstallments',
+		$prefix . 'ImojeWallet',
+		$prefix . 'ImojeLeasenow',
+		$prefix . 'ImojeWt',
 	];
 }
 
@@ -232,9 +244,9 @@ function imoje_create_transaction_ajax() {
 			$blik_code,
 			'',
 			$cid,
-			Helper::get_invoice( $order, $options['ing_ksiegowosc'], true, $options['ing_ksiegowosc_meta_tax'] ),
+			Imoje_Helper::get_invoice( $order, $options['ing_ksiegowosc'], true, $options['ing_ksiegowosc_meta_tax'] ),
 			'',
-			Helper::get_version()
+			Imoje_Helper::get_version()
 		);
 	}
 
@@ -246,8 +258,11 @@ function imoje_create_transaction_ajax() {
 	}
 
 	if ( isset( $transaction['data']['body'] ) && $transaction['data']['body'] ) {
-		error_log( __( 'Transaction could not be initialized, error: ' ), 'imoje' )
-		. $transaction['data']['body'];
+
+		wc_get_logger()->error(
+			__( 'Transaction could not be initialized, error: ', 'imoje' ) . json_encode( $transaction['data']['body'] ), [
+			'source' => 'imoje',
+		] );
 	}
 
 	wp_send_json_error();
@@ -371,7 +386,7 @@ function imoje_get_api_instance( $method ) {
 		$options['authorization_token'],
 		$options['merchant_id'],
 		$options['service_id'],
-		Helper::check_is_config_value_selected( $options['sandbox'] )
+		Imoje_Helper::check_is_config_value_selected( $options['sandbox'] )
 			? Util::ENVIRONMENT_SANDBOX
 			: Util::ENVIRONMENT_PRODUCTION
 	);
@@ -493,3 +508,99 @@ function imoje_get_error_message( $code ) {
 	return $msg . ' ' . $tEnterT6;
 }
 // endregion
+
+add_action( 'updated_option', 'imoje_leasenow_updated_settings', 10, 3 );
+
+/**
+ * @param string $option
+ * @param mixed  $old_value
+ * @param mixed  $value
+ *
+ * @return void
+ */
+function imoje_leasenow_updated_settings( $option, $old_value, $value ) {
+
+
+	if ( $option !== 'woocommerce_imoje_leasenow_settings' ) {
+
+		return;
+	}
+
+	$api = new Api( $value['authorization_token'], $value['merchant_id'], $value['service_id'], $value['sandbox'] === "no"
+		? Util::ENVIRONMENT_PRODUCTION
+		: Util::ENVIRONMENT_SANDBOX );
+
+	$serviceInfo = $api->getServiceInfo();
+
+	if ( ! $serviceInfo['success'] ) {
+
+		wp_admin_notice( __( 'Inserted invalid credentials', 'imoje' ), [ 'type' => 'error', 'dismissible' => true ] );
+
+		return;
+	}
+
+	$serviceInfo = $serviceInfo['body'];
+
+	// save for leasenow amount to compare product price
+	foreach ( $serviceInfo['service']['paymentMethods'] as $paymentMethod ) {
+		if ( $paymentMethod['paymentMethodCode'] === Util::getPaymentMethodCode( 'lease_now' ) && $paymentMethod['currency'] === 'PLN' ) {
+
+			$value['product_min_amount'] = $paymentMethod['transactionLimits']['minTransaction']['value'];
+
+			update_option( 'woocommerce_imoje_leasenow_settings', $value );
+		}
+	}
+}
+
+// display button on a product list
+add_action( 'woocommerce_after_shop_loop_item_title', 'imoje_leasenow_woocommerce_after_shop_loop_item_title' );
+
+// display button on product page
+add_action( 'woocommerce_after_add_to_cart_form', 'imoje_leasenow_woocommerce_after_add_to_cart_form' );
+
+/**
+ * @return void
+ */
+function imoje_leasenow_woocommerce_after_shop_loop_item_title() {
+	imoje_leasenow_load_template_leasenow_button( 'image_scale_list' );
+}
+
+/**
+ * @return void
+ */
+function imoje_leasenow_woocommerce_after_add_to_cart_form() {
+	imoje_leasenow_load_template_leasenow_button( 'image_scale_product' );
+}
+
+/**
+ * @param string $scale_option_name
+ *
+ * @return void
+ */
+function imoje_leasenow_load_template_leasenow_button( $scale_option_name ) {
+
+	$plugin_options = imoje_get_options( 'imoje_leasenow' );
+
+	if ( ! isset( $plugin_options['product_min_amount'] ) ) {
+		return;
+	}
+
+	$image_scale = (int) $plugin_options[ $scale_option_name ];
+
+	if ( $image_scale <= 0 ) {
+		return;
+	}
+
+	/** @var WC_Product $product */
+	global $product;
+
+	if ( Util::convertAmountToFractional( $product->get_price() ) < $plugin_options['product_min_amount'] ) {
+		return;
+	}
+
+	global $wp_query;
+
+	$wp_query->query_vars['leasenow_image_scale'] = $image_scale;
+
+	load_template( WOOCOMMERCE_IMOJE_PLUGIN_DIR . 'includes/templates/leasenow_button.php', false );
+}

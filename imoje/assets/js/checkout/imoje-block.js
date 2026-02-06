@@ -15,6 +15,7 @@ function registerImojePaymentMethod() {
 
 	wc.wcBlocksRegistry.registerPaymentMethod({
 		name:           imoje_js_object.name_imoje,
+		content:        ImojePaymentElement,
 		label:          React.createElement(
 			'span',
 			{
@@ -29,8 +30,7 @@ function registerImojePaymentMethod() {
 		),
 		ariaLabel:      imoje_js_object.name_imoje,
 		edit:           ImojePaymentElement,
-		content:        ImojePaymentElement,
-		canMakePayment: imojeCanMakePayment(imoje_js_object.settings_imoje),
+		canMakePayment: imojeCanMakePayment(imoje_js_object.settings_imoje)
 	});
 }
 

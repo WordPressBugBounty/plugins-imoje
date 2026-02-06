@@ -1,34 +1,38 @@
 === imoje ===
 Contributors: imoje
 Tags: imoje, woocommerce, payments, payment gateway, checkout
-Tested up to: 6.8.1
+Tested up to: 6.9.0
 Requires PHP: 5.6.0
 License: GPLv2
-Stable tag: 4.11.0
+Stable tag: 4.15.1
 
 Add payment via imoje to WooCommerce
 
 == Description ==
-**imoje payment plugin for WooCommerce**
+**Official ING's imoje payment plugin for WooCommerce**
 
 Plugin adds usage of online payments via imoje payment gateway to WooCommerce with following methods:
 
-* imoje - redirects payer to imoje paywall with every available payment method
+* imoje Paywall - redirects payer to imoje paywall with every available payment method
 * imoje BLIK - redirects payer to BLIK payment page
 * imoje cards - redirects payer to imoje paywall with card form (VISA, MASTERCARD, Google Pay, Apple Pay, VISA MOBILE)
+* imoje electronic wallet - redirects payer to Apple Pay or Google Pay payment 
 * imoje PBL - redirects payer to fast online transfer of chosen bank
 * imoje pay later- redirects payer to Twisto, PayPo, BLIK Paylater or PragmGO payment page
 * imoje VISA MOBILE - redirects payer to paywall with displayed VISA MOBILE payment method
 * imoje installments - a widget on the checkout page that allows you to configure the number of instalments before proceeding to payment
-
+* imoje wire transfer - redirects payer to imoje paywall with data for wire transfer
+* imoje Lease Now - allows payer to use ING Lease Now payment from product, cart or checkout page
 
 Additional info about imoje can be found [here](https://www.ing.pl/bramka-platnicza-imoje).
 
-Sandbox environment can be found [here](https://sandbox.imoje.ing.pl/)
+Sandbox environment can be found [here](https://sandbox.imoje.ing.pl/).
 
 Technical documentation is available here:
-[Paywall](https://imojepaywall.docs.apiary.io/)
-[RESTful API](https://imojeapi.docs.apiary.io/)
+[RESTful API](https://data.imoje.pl/documentation/pl/api)
+[FRONT API](https://data.imoje.pl/documentation/pl/paywall)
+
+Please send any questions or bug reports to us by e-mail or telephone.
 
 Technical Support:
 kontakt.tech@imoje.pl
@@ -41,27 +45,21 @@ Availability: Mon – Fri, between 9 AM and 4 PM.
 The module requires configuration in the imoje administration panel.
 
 * go to [imoje.ing.pl](https://imoje.ing.pl/) and log into the administration panel, 
-* go to the "Stores" > your store > "Details" > "Data for integration" tab, copy the configuration keys (merchant id, service id and service key) and insert them into plugin configuration,
-* you also have to copy authorization token from settings > API Keys > Default > Details tab and inster it into plugin configuration,
+* go to the "Stores" > your store > "Details" > "Data for integration" tab, copy the configuration keys (merchant id, service id, service key and authorization token) and insert them into plugin configuration,
 * select the currency activated in the imoje service.
-* copy the notification address from the bottom of configuration page of the plugin and insert into the appropriate field in "Stores" > your store > "Details" > "Data for integration" tab,
 
+You do not need to specify a notification address in the imoje panel – it will be sent automatically.
 
-Detailed integration instruction for WooCommerce plugin is available [here](https://www.ing.pl/_fileserver/item/zujiesw)
-
+Detailed integration instruction for the module is available [here](https://www.ing.pl/_fileserver/item/zujiesw)
 
 == Frequently Asked Questions ==
 = After choosing BLIK payment, the payer gets redirected to main shop site. How can I fix it? =
 This situation usually occurs due to entering an incorrect authorization token or Service Key in the BLIK payment settings.
 
-Token can be found in the imoje panel settings > tab "API keys" > after clicking on the existing key "Details" > field "Authorization token". 
-Service Key can be found in the imoje panel "Stores" > store name > "Details" > "Data for integration".
+Token and service Key can be found in the imoje panel "Stores" > store name > "Details" > "Data for integration".
 
 = Payment method doesn't show up on checkout after configuration is done. =
 This situation is usually caused by not choosing currency in the plugin configuration page. 
-
-= There are several notification addresses. Which one should i choose? =
-You can copy and enter any notification address in the imoje administration panel and notification for all other payment methods will work correctly.
 
 == Screenshots ==
 
@@ -72,6 +70,17 @@ You can copy and enter any notification address in the imoje administration pane
 
 
 == Changelog ==
+= 4.15.1 =
+* revert ipn source amount to compare
+= 4.15.0 =
+* added optional support for notifications with "cancelled" status
+* added the prefix imoje to functions related to Lease Now
+= 4.14.0 =
+* added Lease Now
+= 4.13.0 =
+* added wire transfer payment method
+= 4.12.0 =
+* Changes made in line with WordPress plugin guidelines
 = 4.11.0 =
 * added error logging to WooCommerce logs
 * minor fixes

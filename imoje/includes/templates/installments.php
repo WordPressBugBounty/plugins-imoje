@@ -1,17 +1,21 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /** @var array $installments_data */
 
 ?>
 
 <div class="imoje-payment-method-container">
 	<div class="imoje-installments__wrapper" id="imoje-installments__wrapper"
-	     data-installments-amount="<?= $installments_data['amount'] ?>"
-	     data-installments-currency="<?= $installments_data['currency'] ?>"
-	     data-installments-service-id="<?= $installments_data['serviceId'] ?>"
-	     data-installments-merchant-id="<?= $installments_data['merchantId'] ?>"
-	     data-installments-signature="<?= $installments_data['signature'] ?>"
-	     data-installments-url="<?= $installments_data['url'] ?>"
+	     data-installments-amount="<?php echo $installments_data['amount']; ?>"
+	     data-installments-currency="<?php echo $installments_data['currency']; ?>"
+	     data-installments-service-id="<?php echo $installments_data['serviceId']; ?>"
+	     data-installments-merchant-id="<?php echo $installments_data['merchantId']; ?>"
+	     data-installments-signature="<?php echo $installments_data['signature']; ?>"
+	     data-installments-url="<?php echo $installments_data['url']; ?>"
 	>
 	</div>
 

@@ -63,7 +63,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 		$this->id                 = $this->payment_method_name;
 		$this->method_title       = $this->get_payment_method_data( 'name' );
 		$this->method_description = __( 'imoje payments', 'imoje' );
-		$this->sandbox            = Helper::check_is_config_value_selected( $this->get_option( 'sandbox' ) );
+		$this->sandbox            = Imoje_Helper::check_is_config_value_selected( $this->get_option( 'sandbox' ) );
 		$this->has_fields         = false;
 		$this->supports           = [
 			'products',
@@ -72,7 +72,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 		$this->description        = $this->get_option( 'description', ' ' );
 
 		$this->title = $this->get_option( 'title' );
-		$this->icon  = Helper::check_is_config_value_selected( $this->get_option( 'hide_brand' ) )
+		$this->icon  = Imoje_Helper::check_is_config_value_selected( $this->get_option( 'hide_brand' ) )
 			? null
 			: WOOCOMMERCE_IMOJE_PLUGIN_URL . '/assets/images/' . $this->payment_method_name . '.png';
 	}
@@ -93,53 +93,65 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 	public static function payment_method_list() {
 
 		return [
-			WC_Gateway_ImojeBlik::PAYMENT_METHOD_NAME         => Helper::get_gateway_details(
+			WC_Gateway_ImojeBlik::PAYMENT_METHOD_NAME         => Imoje_Helper::get_gateway_details(
 				__( 'imoje - BLIK', 'imoje' ),
 				__( 'BLIK', 'imoje' ),
-				__( 'Pay with BLIK via imoje.', 'imoje' ),
+				__( 'Pay with BLIK via imoje', 'imoje' ),
 				false
 			),
-			WC_Gateway_ImojeCards::PAYMENT_METHOD_NAME        => Helper::get_gateway_details(
+			WC_Gateway_ImojeCards::PAYMENT_METHOD_NAME        => Imoje_Helper::get_gateway_details(
 				__( 'imoje - cards', 'imoje' ),
 				__( 'Payment cards', 'imoje' ),
-				__( 'Pay with card via imoje.', 'imoje' ),
+				__( 'Pay with card via imoje', 'imoje' ),
 				true
 			),
-			WC_Gateway_Imoje::PAYMENT_METHOD_NAME             => Helper::get_gateway_details(
+			WC_Gateway_Imoje::PAYMENT_METHOD_NAME             => Imoje_Helper::get_gateway_details(
 				__( 'imoje - Paywall', 'imoje' ),
 				__( 'Simple and easy online payments', 'imoje' ),
-				__( 'You will be redirected to a payment method selection page.', 'imoje' ),
+				__( 'You will be redirected to a payment method selection page', 'imoje' ),
 				true
 			),
-			WC_Gateway_ImojePbl::PAYMENT_METHOD_NAME          => Helper::get_gateway_details(
+			WC_Gateway_ImojePbl::PAYMENT_METHOD_NAME          => Imoje_Helper::get_gateway_details(
 				__( 'imoje - PBL', 'imoje' ),
 				__( 'Pay-By-Link', 'imoje' ),
 				__( 'Choose payment channel and pay via imoje.', 'imoje' ),
 				false
 			),
-			WC_Gateway_ImojePaylater::PAYMENT_METHOD_NAME     => Helper::get_gateway_details(
+			WC_Gateway_ImojePaylater::PAYMENT_METHOD_NAME     => Imoje_Helper::get_gateway_details(
 				__( 'imoje - pay later', 'imoje' ),
 				__( 'imoje - pay later', 'imoje' ),
-				__( 'Buy now, pay later via imoje.', 'imoje' ),
+				__( 'Buy now, pay later via imoje', 'imoje' ),
 				false
 			),
-			WC_Gateway_ImojeVisa::PAYMENT_METHOD_NAME         => Helper::get_gateway_details(
+			WC_Gateway_ImojeVisa::PAYMENT_METHOD_NAME         => Imoje_Helper::get_gateway_details(
 				__( 'imoje - Visa Mobile', 'imoje' ),
 				__( 'Visa Mobile', 'imoje' ),
-				__( 'Visa Mobile payment with imoje ', 'imoje' ),
+				__( 'Visa Mobile payment with imoje.', 'imoje' ),
 				true
 			),
-			WC_Gateway_ImojeInstallments::PAYMENT_METHOD_NAME => Helper::get_gateway_details(
+			WC_Gateway_ImojeInstallments::PAYMENT_METHOD_NAME => Imoje_Helper::get_gateway_details(
 				__( 'imoje - installments', 'imoje' ),
 				__( 'imoje installments', 'imoje' ),
 				__( 'imoje installments', 'imoje' ),
 				false
 			),
-			WC_Gateway_ImojeWallet::PAYMENT_METHOD_NAME       => Helper::get_gateway_details(
+			WC_Gateway_ImojeWallet::PAYMENT_METHOD_NAME       => Imoje_Helper::get_gateway_details(
 				__( 'imoje - electronic wallet', 'imoje' ),
 				__( 'Electronic wallet', 'imoje' ),
-				__( 'Pay with electronic wallet via imoje.', 'imoje' ),
+				__( 'Pay with electronic wallet via imoje', 'imoje' ),
 				false
+			),
+			WC_Gateway_ImojeWt::PAYMENT_METHOD_NAME           => Imoje_Helper::get_gateway_details(
+				__( 'imoje - wire transfer', 'imoje' ),
+				__( 'Wire transfer', 'imoje' ),
+				__( 'Wire transfer payment with imoje', 'imoje' ),
+				true
+			),
+			WC_Gateway_ImojeLeasenow::PAYMENT_METHOD_NAME     => Imoje_Helper::get_gateway_details(
+				__( 'imoje - Lease Now', 'imoje' ),
+				__( 'Lease Now', 'imoje' ),
+				__( 'Pay with Lease Now via imoje', 'imoje' ),
+				true
 			),
 		];
 	}
@@ -167,7 +179,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 	 * @return array|string
 	 */
 	protected function get_invoice( $order ) {
-		return Helper::get_invoice(
+		return Imoje_Helper::get_invoice(
 			$order,
 			$this->get_option( 'ing_ksiegowosc' ),
 			true,
@@ -242,10 +254,10 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 				'default' => 'no',
 			],
 			'sandbox'                 => [
-				'title'   => __( 'Sandbox', 'imoje' ),
-				'type'    => 'checkbox',
-				'default' => 'no',
-				'label'   => __( 'Enable sandbox', 'imoje' ),
+				'title'       => __( 'Sandbox', 'imoje' ),
+				'type'        => 'checkbox',
+				'default'     => 'no',
+				'label'       => __( 'Enable sandbox', 'imoje' ),
 				'description' => __( 'In order to use sandbox mode, you must create an account in a dedicated <b><a href="https://sandbox.imoje.ing.pl">sandbox environment</a></b>', 'imoje' ),
 			],
 			'hide_brand'              => [
@@ -255,14 +267,20 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 				'label'   => __( 'Hide brand', 'imoje' ),
 			],
 			'ing_ksiegowosc'          => [
-				'title'   => __( 'ING Księgowość', 'imoje' ),
+				'title'       => __( 'ING Księgowość', 'imoje' ),
+				'type'        => 'checkbox',
+				'default'     => 'no',
+				'label'       => __( 'Enable', 'imoje' ),
+				'description' => __( 'If you are entitled to a tax exemption and you want imoje to send the basis for the exemption to ING Księgowość, then create a new tax class with a name starting as <b>ZW_</b> and ending with one of the available values of the <b>basisForVatExemption</b> object at the following <b><a href="https://imojeapi.docs.apiary.io/#/introduction/ing-ksiegowosc">link</a></b>. Example: <b>ZW_DENTAL_TECHNICAN_SERVICES</b>', 'imoje' ),
+			],
+			'update_method_name'      => [
+				'title'   => __( 'Update method name in order details via notification', 'imoje' ),
 				'type'    => 'checkbox',
 				'default' => 'no',
 				'label'   => __( 'Enable', 'imoje' ),
-				'description' => __( 'If you are entitled to a tax exemption and you want imoje to send the basis for the exemption to ING Księgowość, then create a new tax class with a name starting as <b>ZW_</b> and ending with one of the available values of the <b>basisForVatExemption</b> object at the following <b><a href="https://imojeapi.docs.apiary.io/#/introduction/ing-ksiegowosc">link</a></b>. Example: <b>ZW_DENTAL_TECHNICAN_SERVICES</b>', 'imoje' ),
 			],
-			'update_method_name'          => [
-				'title'   => __( 'Update method name in order details via notification', 'imoje' ),
+			'cancel_order'            => [
+				'title'   => __( 'Allow order to be cancelled via notification', 'imoje' ),
 				'type'    => 'checkbox',
 				'default' => 'no',
 				'label'   => __( 'Enable', 'imoje' ),
@@ -306,9 +324,9 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 				'options' => Util::getSupportedCurrencies(),
 			],
 			'ing_ksiegowosc_meta_tax' => [
-				'title'   => __( 'Meta name for VAT', 'imoje' ),
-				'type'    => 'text',
-				'default' => '',
+				'title'       => __( 'Meta name for VAT', 'imoje' ),
+				'type'        => 'text',
+				'default'     => '',
 				'description' => __( 'Required if you want to use ING Księgowość and create invoices with VAT ID', 'imoje' ),
 			],
 		];
@@ -333,13 +351,13 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 			throw new Exception( __( 'Refund amount must be higher than 0', 'imoje' ) );
 		}
 
-		return Helper::process_refund(
+		return Imoje_Helper::process_refund(
 			$order_id,
 			$this->get_option( 'authorization_token' ),
 			$this->get_option( 'merchant_id' ),
 			$this->get_option( 'service_id' ),
 			$amount,
-			Helper::check_is_config_value_selected( $this->get_option( 'sandbox' ) )
+			Imoje_Helper::check_is_config_value_selected( $this->get_option( 'sandbox' ) )
 				? Util::ENVIRONMENT_SANDBOX
 				: Util::ENVIRONMENT_PRODUCTION
 		);
@@ -361,6 +379,9 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 	}
 
 	/**
+	 * The 'payment' object is used for general information about the payment
+	 * The 'transaction' object is used for specific transaction information in situations sensitive to transaction type or status, e.g. refunds.
+	 *
 	 * @return void
 	 * @throws Exception
 	 */
@@ -379,7 +400,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 			exit();
 		}
 
-		if ( ! ( $order = wc_get_order( $result_check_request_notification['transaction']['orderId'] ) ) ) {
+		if ( ! ( $order = wc_get_order( $result_check_request_notification['payment']['orderId'] ) ) ) {
 
 			echo $notification->formatResponse( Notification::NS_ERROR, Notification::NC_ORDER_NOT_FOUND );
 			exit();
@@ -387,6 +408,10 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 
 		$order_status = $order->get_status();
 
+		/*
+		* Verifies if notification contains 'transaction' object and transaction is a refund.
+		* If so, triggers the refund processing for this transaction
+		*/
 		if ( $result_check_request_notification['transaction']['type'] === Notification::TRT_REFUND ) {
 
 			if ( $result_check_request_notification['transaction']['status'] !== Notification::TRS_SETTLED ) {
@@ -415,7 +440,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 
 			$order->add_order_note(
 				sprintf(
-					__( 'Refund for amount %s with UUID %s has been correctly processed.', 'imoje' ),
+					__( 'Refund for amount %1$s with UUID %2$s has been correctly processed.', 'imoje' ),
 					$result_check_request_notification['transaction']['amount'],
 					$result_check_request_notification['transaction']['id']
 				)
@@ -443,12 +468,12 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 
 		$transactionStatuses = Util::getTransactionStatuses();
 
-		if ( ! isset( $transactionStatuses[ $result_check_request_notification['transaction']['status'] ] ) ) {
+		if ( ! isset( $transactionStatuses[ $result_check_request_notification['payment']['status'] ] ) ) {
 			echo $notification->formatResponse( Notification::NS_ERROR, Notification::NC_UNHANDLED_STATUS );
 			exit;
 		}
 
-		switch ( $result_check_request_notification['transaction']['status'] ) {
+		switch ( $result_check_request_notification['payment']['status'] ) {
 			case Notification::TRS_SETTLED:
 
 				$order->update_status( $order->needs_processing()
@@ -456,7 +481,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 					: 'completed',
 					__( 'Transaction reference', 'imoje' ) . ': ' . $result_check_request_notification['transaction']['id'] );
 
-				if ( Helper::check_is_config_value_selected( $this->get_option( 'update_method_name' ) ) && $order->get_payment_method() !== $this->payment_method_name && $order->get_payment_method_title() !== $this->get_payment_method_data( 'display_name' ) ) {
+				if ( Imoje_Helper::check_is_config_value_selected( $this->get_option( 'update_method_name' ) ) && $order->get_payment_method() !== $this->payment_method_name && $order->get_payment_method_title() !== $this->get_payment_method_data( 'display_name' ) ) {
 
 					$order->set_payment_method( $this->payment_method_name );
 					$order->set_payment_method_title( $this->get_payment_method_data( 'display_name' ) );
@@ -470,7 +495,27 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 				exit;
 			case Notification::TRS_REJECTED:
 				$order->update_status( 'failed' );
-				$order->add_order_note( __( 'Transaction reference', 'imoje' ) . ': ' . $result_check_request_notification['transaction']['id'] );
+				$order->add_order_note( __( 'Payment reference', 'imoje' ) . ': ' . $result_check_request_notification['payment']['id'] );
+				echo $notification->formatResponse( Notification::NS_OK );
+				exit;
+			case Notification::TRS_CANCELLED:
+				if ( ! Imoje_Helper::check_is_config_value_selected( $this->get_option( 'cancel_order' ) ) ) {
+					echo $notification->formatResponse(
+						Notification::NS_OK,
+						Notification::NC_ORDER_CANCELLATION_IS_NOT_ENABLED,
+						$order_status
+					);
+					exit();
+				}
+				if ( $order_status !== 'pending' ) {
+					echo $notification->formatResponse(
+						Notification::NS_OK,
+						Notification::NC_INVALID_ORDER_STATUS_FOR_CANCELLATION
+					);
+					exit();
+				}
+				$order->update_status( 'cancelled' );
+				$order->add_order_note( __( 'Payment reference', 'imoje' ) . ': ' . $result_check_request_notification['payment']['id'] );
 				echo $notification->formatResponse( Notification::NS_OK );
 				exit;
 			default:
@@ -493,7 +538,7 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 		$currencies = $this->get_option( 'currencies', [] );
 
 		if ( is_array( $currencies )
-		     && Helper::check_is_config_value_selected( $this->get_option( 'enabled' ) )
+		     && Imoje_Helper::check_is_config_value_selected( $this->get_option( 'enabled' ) )
 		     && in_array( strtolower( get_woocommerce_currency() ), $currencies )
 		     && $this->get_option( 'service_key' )
 		     && $this->get_option( 'service_id' )
@@ -513,11 +558,11 @@ abstract class WC_Gateway_Imoje_Abstract extends WC_Payment_Gateway {
 	 */
 	public function imoje_enqueue_scripts() {
 
-		$version = Helper::get_version();
+		$version = Imoje_Helper::get_version();
 
-		wp_enqueue_script( 'imoje-gateway-js', plugins_url( '/assets/js/imoje-gateway.min.js', WOOCOMMERCE_IMOJE_PLUGIN_DIR ),
+		wp_enqueue_script( 'imoje-gateway-js', plugins_url( '/assets/js/imoje-gateway.min.js', WOOCOMMERCE_IMOJE_PLUGIN_FILE_DIR ),
 			[ 'jquery' ], $version, true );
-		wp_enqueue_style( 'imoje-gateway-css', plugins_url( '/assets/css/imoje-gateway.min.css', WOOCOMMERCE_IMOJE_PLUGIN_DIR ),
+		wp_enqueue_style( 'imoje-gateway-css', plugins_url( '/assets/css/imoje-gateway.min.css', WOOCOMMERCE_IMOJE_PLUGIN_FILE_DIR ),
 			[], $version );
 
 		wp_localize_script( 'imoje-gateway-js', 'imoje_js_object', [ 'imoje_blik_tooltip' => __( "You must insert exactly 6 numbers as BLIK code!", "imoje" ) ] );

@@ -52,6 +52,8 @@ class WC_Gateway_Imoje_RestApi_Blocks extends AbstractPaymentMethodType {
 			$this->enqueue_imoje_visa_payment_script();
 			$this->enqueue_imoje_installments_payment_script();
 			$this->enqueue_imoje_wallet_payment_script();
+			$this->enqueue_imoje_wt_payment_script();
+			$this->enqueue_imoje_leasenow_payment_script();
 		}
 	}
 
@@ -311,6 +313,58 @@ class WC_Gateway_Imoje_RestApi_Blocks extends AbstractPaymentMethodType {
 	}
 
 	/**
+	 * @return void
+	 */
+	private function enqueue_imoje_leasenow_payment_script() {
+		wp_enqueue_script(
+			'imoje-leasenow-payment-block',
+			plugins_url( '../../assets/js/checkout/imoje-leasenow-block.min.js', __FILE__ ),
+			[
+				'wp-element',
+				'wc-blocks-registry',
+			],
+			'1.0.0',
+			true
+		);
+
+		wp_localize_script(
+			'imoje-leasenow-payment-block',
+			'imoje_leasenow_js_object',
+			[
+				'name_leasenow'     => WC_Gateway_ImojeLeasenow::PAYMENT_METHOD_NAME,
+				'logo_leasenow'     => plugins_url( '../../assets/images/imoje_leasenow.png', __FILE__ ),
+				'settings_leasenow' => get_option( 'woocommerce_imoje_leasenow_settings', [] ),
+			]
+		);
+	}
+
+	/**
+	 * @return void
+	 */
+	private function enqueue_imoje_wt_payment_script() {
+		wp_enqueue_script(
+			'imoje-wt-payment-block',
+			plugins_url( '../../assets/js/checkout/imoje-wt-block.min.js', __FILE__ ),
+			[
+				'wp-element',
+				'wc-blocks-registry',
+			],
+			'1.0.0',
+			true
+		);
+
+		wp_localize_script(
+			'imoje-wt-payment-block',
+			'imoje_wt_js_object',
+			[
+				'name_wt'     => WC_Gateway_ImojeWt::PAYMENT_METHOD_NAME,
+				'logo_wt'     => plugins_url( '../../assets/images/imoje_wt.png', __FILE__ ),
+				'settings_wt' => get_option( 'woocommerce_imoje_wt_settings', [] ),
+			]
+		);
+	}
+
+	/**
 	 * @param array $payment_method
 	 *
 	 * @return array
@@ -318,7 +372,7 @@ class WC_Gateway_Imoje_RestApi_Blocks extends AbstractPaymentMethodType {
 	private function get_block_checkout_tooltip( $payment_method ) {
 		return array_values( array_map( function ( $method ) {
 			if ( isset( $method['limit'] ) ) {
-				$method['tooltip'] = Helper::get_tooltip_payment_channel( $method );
+				$method['tooltip'] = Imoje_Helper::get_tooltip_payment_channel( $method );
 			}
 
 			return $method;
