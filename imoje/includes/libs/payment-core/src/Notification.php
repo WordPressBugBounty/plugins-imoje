@@ -292,6 +292,7 @@ class Notification
 	 */
 	public static function checkRequestAmount($payloadDecoded, $amount, $currency)
 	{
+
 		$requestAmount = $payloadDecoded['transaction']['amount'];
 		$requestCurrency = $payloadDecoded['transaction']['currency'];
 

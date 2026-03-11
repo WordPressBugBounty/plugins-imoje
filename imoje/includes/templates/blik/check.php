@@ -115,7 +115,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 						setTimeout(
 							function () {
-								window.location.href = '<?php echo esc_html( $imoje_order_return_url ); ?>'
+								window.location.href = '<?php echo esc_url_raw( $imoje_order_return_url ); ?>'
 							}, ms_redirect)
 
 					}
