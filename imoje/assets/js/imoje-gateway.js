@@ -45,7 +45,7 @@
 		var payment_method = $(this).find('input[name="payment_method"]:checked').val(),
 			validate_result = true;
 
-		if (['imoje_pbl', 'imoje_blik', 'imoje_paylater'].includes(payment_method)) {
+		if (['imoje_pbl', 'imoje_blik', 'imoje_paylater', 'imoje_wallet'].includes(payment_method)) {
 			validate_result = validate_channels();
 		}
 
@@ -63,6 +63,9 @@
 	});
 	$form.on('checkout_place_order_imoje_paylater', function () {
 		return validate_channels($('.payment_method_imoje_paylater'));
+	});
+	$form.on('checkout_place_order_imoje_wallet', function () {
+		return validate_channels($('.payment_method_imoje_wallet'));
 	});
 	$form.on('checkout_place_order_imoje_blik', function () {
 		return validate_blik();

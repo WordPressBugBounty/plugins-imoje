@@ -1,10 +1,10 @@
 === imoje ===
 Contributors: imoje
 Tags: imoje, woocommerce, payments, payment gateway, checkout
-Tested up to: 6.9.0
+Tested up to: 7.0.0
 Requires PHP: 5.6.0
 License: GPLv2
-Stable tag: 4.15.2
+Stable tag: 4.15.3
 
 Add payment via imoje to WooCommerce
 
@@ -70,8 +70,10 @@ This situation is usually caused by not choosing currency in the plugin configur
 
 
 == Changelog ==
+= 4.15.3 =
+* minor fixes 
 = 4.15.2 =
-* changed the method of sanitazing URLs in BLIK 0 level payment method redirection
+* minor fixes
 = 4.15.1 =
 * revert ipn source amount to compare
 = 4.15.0 =
