@@ -1,75 +1,84 @@
 === imoje ===
 Contributors: imoje
 Tags: imoje, woocommerce, payments, payment gateway, checkout
-Tested up to: 7.0.0
+Tested up to: 7.0.4
 Requires PHP: 5.6.0
-License: GPLv2
-Stable tag: 4.15.3
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
+Stable tag: 4.16.0
 
-Add payment via imoje to WooCommerce
+Add payment via ING Pay (imoje) to WooCommerce
 
 == Description ==
-**Official ING's imoje payment plugin for WooCommerce**
+**Official ING Pay (imoje) payment plugin for WooCommerce**
 
-Plugin adds usage of online payments via imoje payment gateway to WooCommerce with following methods:
+Plugin adds usage of online payments via ING Pay (imoje) payment gateway to WooCommerce with following methods:
 
-* imoje Paywall - redirects payer to imoje paywall with every available payment method
-* imoje BLIK - redirects payer to BLIK payment page
-* imoje cards - redirects payer to imoje paywall with card form (VISA, MASTERCARD, Google Pay, Apple Pay, VISA MOBILE)
-* imoje electronic wallet - redirects payer to Apple Pay or Google Pay payment 
-* imoje PBL - redirects payer to fast online transfer of chosen bank
-* imoje pay later- redirects payer to Twisto, PayPo, BLIK Paylater or PragmGO payment page
-* imoje VISA MOBILE - redirects payer to paywall with displayed VISA MOBILE payment method
-* imoje installments - a widget on the checkout page that allows you to configure the number of instalments before proceeding to payment
-* imoje wire transfer - redirects payer to imoje paywall with data for wire transfer
-* imoje Lease Now - allows payer to use ING Lease Now payment from product, cart or checkout page
+* ING Pay - redirects payer to ING Pay (imoje) paywall with every available payment method
+* ING Pay BLIK - redirects payer to BLIK payment page
+* ING Pay cards - redirects payer to ING Pay (imoje) paywall with card form (VISA, MASTERCARD, Google Pay, Apple Pay, VISA MOBILE)
+* ING Pay electronic wallet - redirects payer to Apple Pay or Google Pay payment
+* ING Pay PBL - redirects payer to fast online transfer of chosen bank
+* ING Pay pay later - redirects payer to Twisto, PayPo, BLIK Paylater or PragmGO payment page
+* ING Pay Visa Mobile - redirects payer to paywall with displayed VISA MOBILE payment method
+* ING Pay installments - a widget on the checkout page that allows you to configure the number of instalments before proceeding to payment
+* ING Pay wire transfer - redirects payer to ING Pay (imoje) paywall with data for wire transfer
+* ING Pay Lease Now - allows payer to use ING Pay (imoje) Lease payment from product, cart or checkout page
 
-Additional info about imoje can be found [here](https://www.ing.pl/bramka-platnicza-imoje).
+Additional info about ING Pay can be found [here](https://www.ing.pl/bramka-platnicza-ing-pay).
 
-Sandbox environment can be found [here](https://sandbox.imoje.ing.pl/).
+Sandbox environment can be found [here](https://sandbox.pay.ing.pl/).
 
 Technical documentation is available here:
-[RESTful API](https://data.imoje.pl/documentation/pl/api)
-[FRONT API](https://data.imoje.pl/documentation/pl/paywall)
+[RESTful API](https://cdn.pay.ing.pl/documentation/pl/api/)
+[FRONT API](https://cdn.pay.ing.pl/documentation/pl/paywall/)
 
 Please send any questions or bug reports to us by e-mail or telephone.
 
 Technical Support:
-kontakt.tech@imoje.pl
+tech@pay.ing.pl
 +48 32 319 35 70
 
 Availability: Mon – Fri, between 9 AM and 4 PM.
 
 == Installation ==
 
-The module requires configuration in the imoje administration panel.
+The module requires configuration in the ING Pay (imoje) administration panel.
 
-* go to [imoje.ing.pl](https://imoje.ing.pl/) and log into the administration panel, 
+* go to [pay.ing.pl](https://pay.ing.pl/) and log into the administration panel,
 * go to the "Stores" > your store > "Details" > "Data for integration" tab, copy the configuration keys (merchant id, service id, service key and authorization token) and insert them into plugin configuration,
-* select the currency activated in the imoje service.
+* select the currency activated in the ING Pay (imoje) service.
 
-You do not need to specify a notification address in the imoje panel – it will be sent automatically.
+You do not need to specify a notification address in the ING Pay (imoje) panel – it will be sent automatically.
 
-Detailed integration instruction for the module is available [here](https://www.ing.pl/_fileserver/item/zujiesw)
+Detailed integration instruction for the module is available [here](https://www.ing.pl/bramka-platnicza-ing-pay/integracje)
 
 == Frequently Asked Questions ==
 = After choosing BLIK payment, the payer gets redirected to main shop site. How can I fix it? =
 This situation usually occurs due to entering an incorrect authorization token or Service Key in the BLIK payment settings.
 
-Token and service Key can be found in the imoje panel "Stores" > store name > "Details" > "Data for integration".
+Token and service Key can be found in the ING Pay (imoje) panel "Stores" > store name > "Details" > "Data for integration".
 
 = Payment method doesn't show up on checkout after configuration is done. =
 This situation is usually caused by not choosing currency in the plugin configuration page. 
 
 == Screenshots ==
 
-1. Payment method channels avilable for configuration
-2. Configuration window of choosen payment channel
+1. Payment method channels available for configuration
+2. Configuration window of chosen payment channel
 3. Payment channels on checkout
 4. Payment methods available on the paywall
 
-
 == Changelog ==
+= 4.16.0 =
+* updated the logos, text and instructions relating to the rebranding of imoje to ING Pay
+* optimised the plugin’s internal mechanisms
+* made improvements to the collection of order information required to issue an invoice in ING Księgowość
+* added caching of payment methods
+* added new logs
+* for BLIK payments with a code, added a message informing the user that the transaction value limit has been exceeded
+* enhanced the module’s security
+* optimised the code and introduced an idempotent mechanism for refunds
 = 4.15.3 =
 * minor fixes 
 = 4.15.2 =

@@ -1,37 +1,30 @@
-function registerImojePaymentMethod() {
-	const ImojePaymentElement = React.createElement(
+( function () {
+
+	const data = wc.wcSettings.getSetting( 'imoje_data' );
+	const { containerClass, headerClass, isEnabled, canMakePayment } = window.imojeBlock;
+
+	const element = React.createElement(
 		'div',
-		{
-			class: imojePaymentMethodContainerClass,
-		},
+		{ class: containerClass },
 		React.createElement(
 			'div',
-			{
-				class: `${imojePaymentMethodContainerClass}__title`,
-			},
-			imoje_js_object.settings_imoje.description,
-		),
+			{ class: `${ containerClass }__title` },
+			data.settings.description
+		)
 	);
 
-	wc.wcBlocksRegistry.registerPaymentMethod({
-		name:           imoje_js_object.name_imoje,
-		content:        ImojePaymentElement,
+	wc.wcBlocksRegistry.registerPaymentMethod( {
+		name:           data.name,
+		content:        element,
 		label:          React.createElement(
 			'span',
-			{
-				class: imojeBlockCheckoutHeaderClass,
-			},
-			imoje_js_object.settings_imoje.title,
-			imoje_js_object.logo_imoje && !isEnabled(imoje_js_object.settings_imoje.hide_brand) &&
-			React.createElement('img', {
-				src: imoje_js_object.logo_imoje,
-				alt: imoje_js_object.name_imoje,
-			}),
+			{ class: headerClass },
+			data.settings.title,
+			data.logo && ! isEnabled( data.settings.hide_brand ) &&
+			React.createElement( 'img', { src: data.logo, alt: data.name } )
 		),
-		ariaLabel:      imoje_js_object.name_imoje,
-		edit:           ImojePaymentElement,
-		canMakePayment: imojeCanMakePayment(imoje_js_object.settings_imoje)
-	});
-}
-
-registerImojePaymentMethod();
+		ariaLabel:      data.name,
+		edit:           element,
+		canMakePayment: canMakePayment( data ),
+	} );
+} )();

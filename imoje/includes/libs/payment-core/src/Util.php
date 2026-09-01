@@ -52,19 +52,19 @@ class Util {
 	/**
 	 * @var string
 	 */
-	private static $cdnUrl = 'https://data.imoje.pl';
+	private static $cdnUrl = 'https://cdn.pay.ing.pl';
 
 	/**
 	 * @var array[]
 	 */
 	private static $docUrls = [
 		self::LANG_PL => [
-			self::REGULATION => 'https://data.imoje.pl/docs/imoje_regulamin_platnosci.pdf',
-			self::IODO       => 'https://data.imoje.pl/docs/imoje_informacja_administratora_danych_osobowych.pdf',
+			self::REGULATION => 'https://cdn.pay.ing.pl/docs/pl/ingpay_regulamin_platnosci.pdf',
+			self::IODO       => 'https://cdn.pay.ing.pl/docs/pl/ingpay_informacja_administratora_danych_osobowych.pdf',
 		],
 		self::LANG_EN => [
-			self::REGULATION => 'https://data.imoje.pl/docs/en/imoje_general_terms_and_conditions.pdf',
-			self::IODO       => 'https://data.imoje.pl/docs/en/imoje_information_of_the_personal_data_controller.pdf',
+			self::REGULATION => 'https://cdn.pay.ing.pl/docs/en/ingpay_general_terms_and_conditions.pdf',
+			self::IODO       => 'https://cdn.pay.ing.pl/docs/en/ingpay_information_of_the_personal_data_controller.pdf',
 		],
 	];
 
@@ -98,82 +98,7 @@ class Util {
 		'imoje_installments' => 'imoje_installments',
 		'wallet'             => 'wallet',
 		'wt'                 => 'wt',
-		'lease'              => 'lease'
-	];
-
-	/**
-	 * @var array
-	 */
-	private static $paymentMethodCodeList = [
-		'blik'           => 'blik',
-		'alior'          => 'alior',
-		'bnpparibas'     => 'bnpparibas',
-		'bos'            => 'bos',
-		'bs'             => 'bs',
-		'bspb'           => 'bspb',
-		'bzwbk'          => 'bzwbk',
-		'citi'           => 'citi',
-		'creditagricole' => 'creditagricole',
-		'envelo'         => 'envelo',
-		'getin'          => 'getin',
-		'ideabank'       => 'ideabank',
-		'ing'            => 'ing',
-		'inteligo'       => 'inteligo',
-		'ipko'           => 'ipko',
-		'millennium'     => 'millennium',
-		'mtransfer'      => 'mtransfer',
-		'nest'           => 'nest',
-		'noble'          => 'noble',
-		'pbs'            => 'pbs',
-		'pekao24'        => 'pekao24',
-		'plusbank'       => 'plusbank',
-		'pocztowy'       => 'pocztowy',
-		'tmobile'        => 'tmobile',
-		'imoje_twisto'   => 'imoje_twisto',
-		'blik_oneclick'  => 'blik_oneclick',
-		'paypo'          => 'paypo',
-		'pragma_go'      => 'pragma_go',
-		'ecom3ds'        => 'ecom3ds',
-		'visa_mobile'    => 'visa_mobile',
-		'blik_paylater'  => 'blik_paylater',
-		'inbank'         => 'inbank',
-		'inbank_0'       => 'inbank_0',
-		'applepay'       => 'applepay',
-		'gpay'           => 'gpay',
-		'wt'             => 'wt',
-		'wt_split'       => 'wt_split',
-		'lease_now'      => 'lease_now',
-	];
-
-	/**
-	 * @var array
-	 */
-	private static $paymentMethodCodeLogoExt = [
-		'mtransfer'      => 'mtransfer.png',
-		'bzwbk'          => 'bzwbk.png',
-		'pekao24'        => 'pekao24.svg',
-		'inteligo'       => 'inteligo.png',
-		'ipko'           => 'ipko.png',
-		'getin'          => 'getin.svg',
-		'noble'          => 'noble.png',
-		'creditagricole' => 'creditagricole.svg',
-		'alior'          => 'alior.svg',
-		'pbs'            => 'pbs.png',
-		'millennium'     => 'millennium.svg',
-		'citi'           => 'citi.png',
-		'bos'            => 'bos.png',
-		'bnpparibas'     => 'bnpparibas.png',
-		'pocztowy'       => 'pocztowy.svg',
-		'plusbank'       => 'plusbank.png',
-		'bs'             => 'bs.png',
-		'bspb'           => 'bspb.png',
-		'nest'           => 'nest.svg',
-		'ing'            => 'ing.png',
-		'paypo'          => 'paypo.svg',
-		'pragma_go'      => 'pragma_go.svg',
-		'blik_paylater'  => 'blik_paylater.png',
-		'applepay'       => 'applepay.png',
-		'gpay'           => 'gpay.png',
+		'lease'              => 'lease',
 	];
 
 	/**
@@ -230,7 +155,10 @@ class Util {
 	 *
 	 * @return string
 	 */
-	public static function getDocUrl( $language, $name ) {
+	public static function getDocUrl(
+		$language,
+		$name
+	) {
 
 		if ( isset( self::$docUrls[ $language ][ $name ] ) ) {
 			return self::$docUrls[ $language ][ $name ];
@@ -250,7 +178,7 @@ class Util {
 	 * @return string
 	 */
 	public static function createOrderForm(
-		$order,
+		array $order,
 		$url = '',
 		$method = '',
 		$submitValue = '',
@@ -271,10 +199,8 @@ class Util {
 
 		$form = '<form method="' . $method . '" action="' . $url . '">';
 
-		if ( is_array( $order ) ) {
-			foreach ( $order as $key => $value ) {
-				$form .= '<input type="hidden" value="' . htmlentities( $value ) . '" name="' . $key . '" id="imoje_' . $key . '">';
-			}
+		foreach ( $order as $key => $value ) {
+			$form .= '<input type="hidden" value="' . htmlentities( $value ) . '" name="' . htmlspecialchars( $key, ENT_QUOTES ) . '" id="imoje_' . htmlspecialchars( $key, ENT_QUOTES ) . '">';
 		}
 
 		$form .= '<button' . ( $submitClass
@@ -309,33 +235,6 @@ class Util {
 	}
 
 	/**
-	 * @param string $paymentMethodCode
-	 *
-	 * @return string
-	 */
-	public static function getPaymentMethodCodeLogo( $paymentMethodCode ) {
-
-		if ( isset( self::$paymentMethodCodeLogoExt[ $paymentMethodCode ] ) ) {
-			return self::$cdnUrl . '/img/pay/' . self::$paymentMethodCodeLogoExt[ $paymentMethodCode ];
-		}
-
-		return '';
-	}
-
-	/**
-	 * @param string $paymentMethodCode
-	 *
-	 * @return string
-	 */
-	public static function getPaymentMethodCode( $paymentMethodCode ) {
-		if ( isset( self::$paymentMethodCodeList[ $paymentMethodCode ] ) ) {
-			return self::$paymentMethodCodeList[ $paymentMethodCode ];
-		}
-
-		return '';
-	}
-
-	/**
 	 * @param string $variable
 	 *
 	 * @return bool
@@ -354,7 +253,7 @@ class Util {
 	}
 
 	/**
-	 * @param string|array $json
+	 * @param string $json
 	 */
 	public static function doResponseJson( $json ) {
 
@@ -365,7 +264,7 @@ class Util {
 	}
 
 	/**
-	 * @param string|int $data
+	 * @param string $data
 	 *
 	 * @return string
 	 */
@@ -383,13 +282,17 @@ class Util {
 	}
 
 	/**
-	 * @param number $firstValue
-	 * @param number $secondValue
-	 * @param number $precision
+	 * @param int|float $firstValue
+	 * @param int|float $secondValue
+	 * @param int       $precision
 	 *
 	 * @return float
 	 */
-	public static function multiplyValues( $firstValue, $secondValue, $precision ) {
+	public static function multiplyValues(
+		$firstValue,
+		$secondValue,
+		$precision
+	) {
 		return round( $firstValue * $secondValue, $precision );
 	}
 
@@ -409,7 +312,11 @@ class Util {
 	 *
 	 * @return string
 	 */
-	public static function hashSignature( $hashMethod, $data, $serviceKey ) {
+	public static function hashSignature(
+		$hashMethod,
+		$data,
+		$serviceKey
+	) {
 		return hash( $hashMethod, $data . $serviceKey );
 	}
 
@@ -418,7 +325,7 @@ class Util {
 	 *
 	 * @return string|void
 	 */
-	public static function calculateAmountToRefund( $transaction ) {
+	public static function calculateAmountToRefund( array $transaction ) {
 		$refundAmount = 0;
 
 		if ( isset( $transaction['body']['transaction']['refunds'] ) && $transaction['body']['transaction']['refunds'] ) {
@@ -431,5 +338,32 @@ class Util {
 		}
 
 		return $transaction['body']['transaction']['amount'] - $refundAmount;
+	}
+
+	/**
+	 * @param array  $orderData
+	 * @param string $serviceKey
+	 * @param string $hashMethod
+	 *
+	 * @return string|bool
+	 */
+	public static function createSignature(
+		array $orderData,
+		$serviceKey,
+		$hashMethod = 'sha256'
+	) {
+
+		if ( ! self::getHashMethod( $hashMethod ) ) {
+			return '';
+		}
+
+		ksort( $orderData );
+
+		$data = [];
+		foreach ( $orderData as $key => $value ) {
+			$data[] = $key . '=' . $value;
+		}
+
+		return self::hashSignature( $hashMethod, implode( '&', $data ), $serviceKey ) . ';' . $hashMethod;
 	}
 }

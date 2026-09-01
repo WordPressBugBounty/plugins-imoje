@@ -19,44 +19,43 @@ class Validate
 	 * @return bool
 	 * @throws Exception
 	 */
-	public static function notification($data)
-	{
+	public static function notification( $data ) {
 
 		$schema = [
 			'type'       => 'object',
 			'properties' => [
 
-				'payment' => [
+				'payment'     => [
 					'type'       => 'object',
 					'properties' => [
 
-						'amount'   => [
+						'amount'    => [
 							'type'             => 'integer',
 							'minimum'          => 0,
 							'exclusiveMinimum' => true,
 						],
-						'status'   => [
+						'status'    => [
 							'type' => 'string',
 							'enum' => array_values(Util::getTransactionStatuses()),
 						],
-						'orderId' => [
-							'type' => 'string'
+						'orderId'   => [
+							'type' => 'string',
 						],
-						'currency' => [
+						'currency'  => [
 							'type' => 'string',
 							'enum' => array_values(Util::getSupportedCurrencies()),
 						],
 						'serviceId' => [
-						'type' => 'string'
-						]
+							'type' => 'string',
+						],
 					],
-					'required' => [
+					'required'   => [
 						'amount',
 						'status',
 						'orderId',
 						'currency',
-						'serviceId'
-					]
+						'serviceId',
+					],
 				],
 				'transaction' => [
 					'type'       => 'object',
@@ -118,8 +117,11 @@ class Validate
 	 * @return bool
 	 * @throws Exception
 	 */
-	private static function validate($data, $schema, $schemaType)
-	{
+	private static function validate(
+		$data,
+		array  $schema,
+		$schemaType
+	) {
 
 		$data = json_decode($data);
 

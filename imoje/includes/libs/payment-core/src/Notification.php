@@ -139,6 +139,13 @@ class Notification
 	 */
 	const NC_ORDER_CANCELLATION_IS_NOT_ENABLED = 25;
 
+
+	/**
+	 * @const int
+	 */
+	const NC_DOUBLE_VERIFICATION_FAILED = 26;
+
+
 	/**
 	 * @const int
 	 */
@@ -202,68 +209,76 @@ class Notification
 	/**
 	 * @var string
 	 */
-	private $serviceId = '';
+	private $serviceId;
 
 	/**
 	 * @var string
 	 */
-	private $serviceKey = '';
+	private $serviceKey;
 
 	/**
-	 * @var string|bool
+	 * @var bool
 	 */
-	private $orderArrangement = '';
+	private $orderArrangement = false;
 
 	/**
 	 * Notification constructor.
 	 *
 	 * @param string $serviceId
 	 * @param string $serviceKey
+	 * @param bool   $orderArrangement
 	 */
-	public function __construct($serviceId, $serviceKey, $orderArrangement = false)
-	{
+	public function __construct(
+		$serviceId,
+		$serviceKey,
+		$orderArrangement = false
+	) {
 		$this->serviceId = $serviceId;
 		$this->serviceKey = $serviceKey;
 
-		if($orderArrangement) {
+		if ($orderArrangement) {
 			$this->orderArrangement = $orderArrangement;
 		}
 	}
 
 	/**
-	 * @param string          $status
-	 * @param string          $code
-	 * @param string|int|null $statusBefore
-	 * @param string|int|null $statusAfter
+	 * @param string $status
+	 * @param string $code
+	 * @param string $statusBefore
+	 * @param string $statusAfter
 	 *
 	 * @return string
 	 */
-	public function formatResponse($status, $code = '', $statusBefore = null, $statusAfter = null)
-	{
+	public function formatResponse(
+		$status,
+		$code = '',
+		$statusBefore = '',
+		$statusAfter = ''
+	) {
 		$response = [
 			'status' => $status,
 		];
 
-		if($code) {
+		if ($code) {
 			$response['data'] = [
 				'code' => $code,
 			];
 		}
 
-		if($this->orderArrangement) {
+		if ($this->orderArrangement) {
 			$response['data']['creatingOrderMode'] = $this->orderArrangement;
 		}
 
-		if($statusBefore) {
+		if ($statusBefore) {
 			$response['data']['statusBefore'] = $statusBefore;
 		}
 
-		if($statusAfter) {
+		if ($statusAfter) {
 			$response['data']['statusAfter'] = $statusAfter;
 		}
 
 		// region adds additional data for some cases and set proper header
-		switch($status) {
+		switch ($status) {
 			case self::NS_OK:
 
 				header('HTTP/1.1 200 OK');
@@ -290,14 +305,16 @@ class Notification
 	 *
 	 * @return bool
 	 */
-	public static function checkRequestAmount($payloadDecoded, $amount, $currency)
-	{
+	public static function checkRequestAmount(
+		array $payloadDecoded,
+		$amount,
+		$currency
+	) {
 
-		$requestAmount = $payloadDecoded['transaction']['amount'];
-		$requestCurrency = $payloadDecoded['transaction']['currency'];
-
-		if ( !isset($payloadDecoded['transaction']) ) {
-
+		if (isset($payloadDecoded['transaction'])) {
+			$requestAmount = $payloadDecoded['transaction']['amount'];
+			$requestCurrency = $payloadDecoded['transaction']['currency'];
+		} else {
 			$requestAmount = $payloadDecoded['payment']['amount'];
 			$requestCurrency = $payloadDecoded['payment']['currency'];
 		}
@@ -308,25 +325,24 @@ class Notification
 	/**
 	 * Verify notification body and signature
 	 *
-	 * @return bool|array
-	 * @throws Exception
+	 * @return array|int
 	 */
 	public function checkRequest()
 	{
 
-		if(!isset($_SERVER['CONTENT_TYPE'], $_SERVER[self::HEADER_SIGNATURE_NAME]) || strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== 0) {
+		if (!isset($_SERVER['CONTENT_TYPE'], $_SERVER[self::HEADER_SIGNATURE_NAME]) || strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== 0) {
 
 			return self::NC_INVALID_SIGNATURE_HEADERS;
 		}
 
 		$payload = file_get_contents('php://input', true);
 
-		if(!$payload) {
+		if (!$payload) {
 
 			return self::NC_EMPTY_NOTIFICATION;
 		}
 
-		if(!Util::isJson($payload)) {
+		if (!Util::isJson($payload)) {
 
 			return self::NC_NOTIFICATION_IS_NOT_JSON;
 		}
@@ -334,12 +350,28 @@ class Notification
 		$header = $_SERVER[self::HEADER_SIGNATURE_NAME];
 		$header = (explode(';', $header));
 
-		$algoFromNotification = explode('=', $header[3]);
-		$algoFromNotification = $algoFromNotification[1];
+		if (count($header) < 4) {
+			return self::NC_INVALID_SIGNATURE;
+		}
+
+		$algoParts = explode('=', $header[3]);
+		if (count($algoParts) < 2 || !$algoParts[1]) {
+			return self::NC_INVALID_SIGNATURE;
+		}
+
+		$algoFromNotification = Util::getHashMethod($algoParts[1]);
+
+		if (!$algoFromNotification) {
+
+			return self::NC_INVALID_SIGNATURE;
+		}
 
 		$headerSignature = explode('=', $header[2]);
+		if (count($headerSignature) < 2 || !isset($headerSignature[1])) {
+			return self::NC_INVALID_SIGNATURE;
+		}
 
-		if($headerSignature[1] !== Util::hashSignature($algoFromNotification, $payload, $this->serviceKey)) {
+		if (!hash_equals(Util::hashSignature($algoFromNotification, $payload, $this->serviceKey), $headerSignature[1])) {
 
 			return self::NC_INVALID_SIGNATURE;
 		}
@@ -347,14 +379,14 @@ class Notification
 		try {
 
 			Validate::notification($payload);
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 
 			return self::NC_INVALID_JSON_STRUCTURE;
 		}
 
 		$payloadDecoded = json_decode($payload, true);
 
-		if($payloadDecoded['payment']['serviceId'] !== $this->serviceId) {
+		if ($payloadDecoded['payment']['serviceId'] !== $this->serviceId) {
 
 			return self::NC_SERVICE_ID_NOT_MATCH;
 		}

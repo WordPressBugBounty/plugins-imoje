@@ -2,6 +2,8 @@
 
 namespace Imoje\Payment;
 
+use Error;
+
 /**
  * Class CartData
  *
@@ -62,7 +64,7 @@ class Invoice {
 	/**
 	 * @const string
 	 */
-	const TAX_NOT_EXLUCDING = 'TAX_NOT_EXCLUDING';
+	const TAX_NOT_EXCLUDING = 'TAX_NOT_EXCLUDING';
 
 	/**
 	 * @const string
@@ -106,9 +108,9 @@ class Invoice {
 	];
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $basisForVatExemption;
+	protected $basisForVatExemption = [];
 
 	/**
 	 * @var array
@@ -140,7 +142,9 @@ class Invoice {
 	 *
 	 * @return bool
 	 */
-	public function validateCurrency( $currency ) {
+	public function validateCurrency(
+		$currency
+	) {
 		return isset( $this->supportCurrencies[ $currency ] );
 	}
 
@@ -154,19 +158,28 @@ class Invoice {
 	 *
 	 * @return void
 	 */
-	public function addItem( $name, $code, $quantity, $taxStake, $grossAmount, $discountAmount = 0 ) {
+	public function addItem(
+		$name,
+		$code,
+		$quantity,
+		$taxStake,
+		$grossAmount,
+		$discountAmount = 0
+	) {
 
 		$position = [
 			'name'        => $name,
 			'code'        => (string) $code,
 			'quantity'    => (float) $quantity,
-			'unit'        => 'Sztuki',
-			'taxStake'    => $taxStake,
+			'unit'        => 'szt.',
+			'taxStake'    => is_numeric( $taxStake )
+				? (int) $taxStake
+				: $taxStake,
 			'grossAmount' => (int) $grossAmount,
 		];
 
 		if ( $discountAmount ) {
-			$position['discountAmount'] = (int) $discountAmount;
+			$position['discountAmount'] = $discountAmount;
 		}
 
 		$this->positions[] = $position;
@@ -186,7 +199,18 @@ class Invoice {
 	 *
 	 * @return Invoice
 	 */
-	public function setBuyer( $type, $email, $fullName, $street, $city, $postalCode, $countryCodeAlpha2, $idCountryCodeAlpha2 = '', $idType = '', $idNumber = '' ) {
+	public function setBuyer(
+		$type,
+		$email,
+		$fullName,
+		$street,
+		$city,
+		$postalCode,
+		$countryCodeAlpha2,
+		$idCountryCodeAlpha2 = '',
+		$idType = '',
+		$idNumber = ''
+	) {
 
 		$array = [
 			'type'              => $type,
@@ -218,10 +242,15 @@ class Invoice {
 	/**
 	 * @param string $idCountryCodeAlpha2
 	 * @param string $idNumber
+	 * @param string $fullName
 	 *
 	 * @return void
 	 */
-	public function setCompanyBuyer( $idCountryCodeAlpha2, $idNumber, $fullName = '' ) {
+	public function setCompanyBuyer(
+		$idCountryCodeAlpha2,
+		$idNumber,
+		$fullName = ''
+	) {
 		$this->buyer['type']                = self::BUYER_COMPANY;
 		$this->buyer['idCountryCodeAlpha2'] = $idCountryCodeAlpha2;
 		$this->buyer['idType']              = self::ID_TYPE_VAT;
@@ -250,17 +279,17 @@ class Invoice {
 	 *
 	 * @return void
 	 */
-	public function setBasis( $basis) {
+	public function setBasis( $basis ) {
 
 		$this->basisForVatExemption = [
-			'type' => $basis
+			'type' => $basis,
 		];
 	}
 
 	/**
-	 * @return array|string
+	 * @return array
 	 */
-	public function prepare( $isApi ) {
+	public function prepare() {
 
 		$array = [
 			'buyer'     => $this->buyer,
@@ -271,48 +300,45 @@ class Invoice {
 			$array['basisForVatExemption'] = $this->basisForVatExemption;
 		}
 
-		return $isApi
-			? $array
-			: base64_encode( gzencode( json_encode( $array ), 5 ) );
+		return $array;
 	}
 
 	/**
 	 * @param CartData $cart
 	 * @param string   $email
-	 * @param bool     $isApi
 	 *
 	 * @return array|string
 	 */
-	public static function get( $cart, $email, $isApi = true ) {
-
-		if ( ! ( $cart instanceof CartData ) ) {
-			return [];
-		}
+	public static function get(
+		CartData $cart,
+		$email
+	) {
 
 		$cart = $cart->prepareCartDataArray();
 
-		$invoice = new Invoice();
-
 		if ( empty( $cart['items'] ) ) {
-			return [];
+			return '';
 		}
+
+		$invoice = new Invoice();
 
 		foreach ( $cart['items'] as $item ) {
 
 			$tax = null;
 			try {
 				$tax = constant( 'self::TAX_' . $item['vat'] );
-			} catch( \Error $e ) {
+			} catch( Error $e ) {
+				return '';
 			}
 
 			if ( ! $tax ) {
-				return [];
+				return '';
 			}
 
 			$invoice->addItem( $item['name'],
 				$item['id'],
 				$item['quantity'],
-				constant( '\Imoje\Payment\Invoice::TAX_' . $item['vat'] ),
+				$tax,
 				$item['amount']
 			);
 		}
@@ -325,6 +351,6 @@ class Invoice {
 			$cart['address']['billing']['postalCode'],
 			$cart['address']['billing']['country'] );
 
-		return $invoice->prepare( $isApi );
+		return $invoice->prepare();
 	}
 }

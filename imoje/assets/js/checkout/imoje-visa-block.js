@@ -1,37 +1,30 @@
-function registerImojePaylaterPaymentMethod() {
-	const ImojeVisaPaymentElement = React.createElement(
-		'div',
-		{
-			class: imojePaymentMethodContainerClass,
-		}, React.createElement(
-			'div',
-			{
-				class: `${imojePaymentMethodContainerClass}__title`,
+( function () {
 
-			},
-			imoje_visa_js_object.settings_visa.description,
-		),
+	const data = wc.wcSettings.getSetting( 'imoje_visa_data' );
+	const { containerClass, headerClass, isEnabled, canMakePayment } = window.imojeBlock;
+
+	const element = React.createElement(
+		'div',
+		{ class: containerClass },
+		React.createElement(
+			'div',
+			{ class: `${ containerClass }__title` },
+			data.settings.description
+		)
 	);
 
-	wc.wcBlocksRegistry.registerPaymentMethod({
-		name:           imoje_visa_js_object.name_visa,
+	wc.wcBlocksRegistry.registerPaymentMethod( {
+		name:           data.name,
 		label:          React.createElement(
 			'span',
-			{
-				class: imojeBlockCheckoutHeaderClass,
-			},
-			imoje_visa_js_object.settings_visa.title,
-			imoje_visa_js_object.logo_visa && !isEnabled(imoje_visa_js_object.settings_visa.hide_brand) &&
-			React.createElement('img', {
-				src: imoje_visa_js_object.logo_visa,
-				alt: imoje_visa_js_object.name_visa,
-			}),
+			{ class: headerClass },
+			data.settings.title,
+			data.logo && ! isEnabled( data.settings.hide_brand ) &&
+			React.createElement( 'img', { src: data.logo, alt: data.name } )
 		),
-		ariaLabel:      imoje_visa_js_object.name_visa,
-		edit:           ImojeVisaPaymentElement,
-		content:        ImojeVisaPaymentElement,
-		canMakePayment: imojeCanMakePayment(imoje_visa_js_object.settings_visa),
-	});
-}
-
-registerImojePaylaterPaymentMethod();
+		ariaLabel:      data.name,
+		edit:           element,
+		content:        element,
+		canMakePayment: canMakePayment( data ),
+	} );
+} )();

@@ -4,12 +4,12 @@
 	"type":        "library",
 	"version":     "2.1.2",
 	"require":     {
-		"justinrainbow/json-schema": "^5.2",
+		"justinrainbow/json-schema": "~5.2.0",
 		"ext-curl":                  "*",
 		"ext-json":                  "*",
 		"php":                       ">=5.6.0",
 		"ext-zlib":                  "*"
-	},
+	}, 
 	"license":     "MIT",
 	"autoload":    {
 		"psr-4": {

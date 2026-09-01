@@ -1,0 +1,283 @@
+$ing-color: #ff6200;
+$background-no-active-color: #e7e7e7;
+$payment-channel-border-color: $background-no-active-color;
+
+.imoje-installments {
+	&__wrapper {
+		iframe {
+			width: 100% !important;
+		}
+		#imoje-installments-container {
+			iframe {
+				width: 100%;
+			}
+		}
+	}
+
+}
+
+.imoje-payment-method-container {
+
+	margin-top: 10px;
+
+	.imoje-channels {
+		list-style-type: none;
+		display: flex;
+		flex-wrap: wrap;
+		margin: 0;
+		padding: 0;
+		justify-content: center;
+
+		li {
+			padding: 5px 3px 0 !important;
+			border: none !important;
+
+			label {
+
+				&:before, &:after {
+					content: none !important;
+				}
+
+				display: flex;
+				border: 2px solid $payment-channel-border-color;
+				border-radius: 2px;
+				width: 83px !important;
+				height: 50px !important;
+				justify-content: center;
+				align-items: center;
+				padding: 10px !important;
+				transition: transform .2s;
+
+				&.imoje-active, &.imoje-c-active:hover {
+					border-color: $ing-color;
+					transform: scale(1.03);
+					cursor: pointer;
+				}
+
+				&.imoje-c-no-active {
+					filter: grayscale(1);
+					background: $background-no-active-color;
+					pointer-events: none;
+				}
+
+				img {
+					width: auto;
+					height: 35px;
+					object-fit: contain;
+					margin: 0 !important;
+				}
+
+				input {
+					display: none;
+				}
+			}
+		}
+	}
+
+	.imoje-pbl-error {
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
+		margin-top: 0.5em;
+		margin-bottom: 0.5em;
+		display: none;
+		&:before {
+			top: 0.5em
+		}
+	}
+
+	&__title {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding-bottom: 15px;
+	}
+
+	&__label {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 5px;
+		padding: 10px;
+		width: 83px !important;
+		height: 50px !important;
+		cursor: pointer;
+		border: 1px solid $payment-channel-border-color;
+
+		&--active {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 5px;
+			padding: 10px;
+			width: 83px !important;
+			height: 50px !important;
+			cursor: pointer;
+			border: 2px solid $ing-color;
+		}
+
+		&--not-available {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 5px;
+			padding: 10px;
+			width: 83px !important;
+			height: 50px !important;
+			border: 1px solid $payment-channel-border-color;
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+	}
+
+	&__wrapper {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		justify-content: center;
+		margin: 10px 0;
+	}
+
+	&__method-wrapper {
+		position: relative;
+	}
+
+	&__blik-code {
+		&-wrapper {
+			margin-bottom: 15px;
+		}
+	}
+
+	&__tooltip {
+		position: absolute;
+		bottom: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		background-color: $background-no-active-color;
+		padding: 5px;
+		border-radius: 4px;
+		font-size: 12px;
+		white-space: nowrap;
+		z-index: 10;
+	}
+
+	&__img {
+		height: 35px !important;
+		width: auto;
+		object-fit: contain;
+	}
+
+	&__twisto {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		padding: 15px;
+	}
+
+	&__legal {
+		span {
+			text-align: center;
+
+			a {
+				color: $ing-color;
+				border-color: $ing-color;
+				transform: scale(1.03);
+				cursor: pointer;
+			}
+		}
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+}
+
+.imoje-blik-code-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	letter-spacing: 5px;
+	margin-top: 10px;
+
+	input {
+		font-size: 24px;
+		padding: 10px;
+		text-align: center;
+		border: 2px solid $ing-color;
+		border-radius: 5px;
+		margin: 0 5px;
+		width: 160px;
+		box-sizing: border-box;
+		outline: none;
+		color: $ing-color;
+
+	}
+}
+
+.imoje-loading {
+	margin-left: 50%;
+	margin-right: 50%;
+}
+
+.imoje-check-payment {
+	text-align: center;
+	border: 2px solid $ing-color;
+	padding: 20px;
+}
+
+.imoje-regulations {
+	margin-top: 15px;
+
+	a {
+		text-decoration: none !important;
+		color: $ing-color;
+		text-decoration-color: $ing-color;
+		outline: none;
+
+		&:hover {
+			text-decoration: underline !important;
+		}
+	}
+}
+
+.imoje-display-none {
+	display: none;
+}
+
+.imoje-card {
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 460px;
+	background: #ffffff;
+	border-radius: 10px;
+	box-shadow: 0 0 2px 0 rgba(0, 0, 0, .12), 0 2px 2px 0 rgba(0, 0, 0, .24);
+
+	.imoje-card-content {
+		text-align: center;
+		padding: 40px 20px;
+		display:flex;
+		flex-direction:column;
+
+		img {
+			display: flex;
+			flex-direction: column;
+			margin-left: auto;
+			margin-right: auto;
+			margin-bottom: 20px;
+			width: 80px;
+		}
+	}
+}
+
+#imoje-installments-container {
+	iframe {
+		width: 100%;
+	}
+}
+
+.imoje-block-checkout {
+	&__header {
+		display: flex;
+		gap: 10px;
+	}
+}

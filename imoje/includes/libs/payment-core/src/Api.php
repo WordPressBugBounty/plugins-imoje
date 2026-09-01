@@ -16,8 +16,11 @@ class Api {
 	const PROFILE = 'profile';
 	const MERCHANT = 'merchant';
 	const SERVICE = 'service';
+	const AUTH = 'auth';
+	const ROTATE = 'rotate';
 	const TRANSACTION_TYPE_SALE = 'sale';
 	const TRANSACTION_TYPE_REFUND = 'refund';
+	const DEFAULT_TIMEOUT = 10;
 
 	/**
 	 * @var array
@@ -75,7 +78,9 @@ class Api {
 	 *
 	 * @return bool
 	 */
-	public static function verifyPaymentLink( $transaction ) {
+	public static function verifyPaymentLink(
+		array $transaction
+	) {
 
 		return isset( $transaction['success'] )
 		       && isset( $transaction['body']['payment']['url'] )
@@ -89,7 +94,9 @@ class Api {
 	 *
 	 * @return bool
 	 */
-	public static function verifyTransaction( $transaction ) {
+	public static function verifyTransaction(
+		array $transaction
+	) {
 
 		return isset( $transaction['success'] )
 		       && isset( $transaction['body']['action']['url'] )
@@ -163,8 +170,8 @@ class Api {
 			'blikProfileId' => $blikProfileId,
 			'amount'        => Util::convertAmountToFractional( $amount ),
 			'currency'      => $currency,
-			'orderId'       => $orderId,
-			'title'         => $title,
+			'orderId'       => (string) $orderId,
+			'title'         => (string) $title,
 			'clientIp'      => $clientIp,
 		];
 
@@ -184,7 +191,9 @@ class Api {
 	 *
 	 * @return array
 	 */
-	public function getTransaction( $id ) {
+	public function getTransaction(
+		$id
+	) {
 
 		return $this->call(
 			$this->getTransactionUrl( $id ),
@@ -193,26 +202,67 @@ class Api {
 	}
 
 	/**
-	 * @param string $url
-	 * @param string $methodRequest
-	 * @param string $body
+	 * @param string $id
 	 *
 	 * @return array
 	 */
-	private function call( $url, $methodRequest, $body = '' ) {
+	public function getPaymentLink(
+		$id
+	) {
+
+		return $this->call(
+			$this->getPaymentLinkUrl( $id ),
+			Util::METHOD_REQUEST_GET
+		);
+	}
+
+	/**
+	 * @param string $url
+	 * @param string $methodRequest
+	 * @param string $body
+	 * @param int    $timeout
+	 *
+	 * @return array
+	 */
+	private function call(
+		$url,
+		$methodRequest,
+		$body = '',
+		$timeout = 0
+	) {
+
+		$timeout = $timeout > 0
+			? (int) $timeout
+			: self::DEFAULT_TIMEOUT;
 
 		$curl = curl_init( $url );
 		curl_setopt( $curl, CURLOPT_CUSTOMREQUEST, $methodRequest );
 		curl_setopt( $curl, CURLOPT_POSTFIELDS, $body );
 		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $curl, CURLOPT_CONNECTTIMEOUT, 10 );
-		curl_setopt( $curl, CURLOPT_TIMEOUT, 10 );
+		curl_setopt( $curl, CURLOPT_CONNECTTIMEOUT, $timeout );
+		curl_setopt( $curl, CURLOPT_TIMEOUT, $timeout );
+		curl_setopt( $curl, CURLOPT_SSL_VERIFYPEER, true );
+		curl_setopt( $curl, CURLOPT_SSL_VERIFYHOST, 2 );
 		curl_setopt( $curl, CURLOPT_HTTPHEADER, [
+			'Accept: application/json',
 			'Content-Type: application/json',
 			'Authorization: Bearer ' . $this->authorizationToken,
 		] );
 
-		$resultCurl = json_decode( curl_exec( $curl ), true );
+		$traceId = '';
+
+		curl_setopt( $curl, CURLOPT_HEADERFUNCTION, function ( $curl, $header ) use ( &$traceId ) {
+
+			if ( stripos( $header, 'x-trace-id:' ) === 0 ) {
+				$traceId = trim( substr( $header, strlen( 'x-trace-id:' ) ) );
+			}
+
+			return strlen( $header );
+		} );
+
+		$response = curl_exec( $curl );
+
+		$resultCurl = json_decode( $response, true );
 
 		$httpCode = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 
@@ -225,6 +275,12 @@ class Api {
 					'error'    => curl_error( $curl ),
 					'body'     => '',
 					'errors'   => [],
+					'url'      => $url,
+					'method'   => $methodRequest,
+					'traceId'  => $traceId,
+					'response' => is_string( $response )
+						? substr( $response, 0, 1000 )
+						: '',
 				],
 			];
 
@@ -263,7 +319,9 @@ class Api {
 	 *
 	 * @return bool
 	 */
-	private function check_retype_code( $code ) {
+	private function check_retype_code(
+		$code
+	) {
 		$array = [
 			'BLK-ERROR-210002',
 			'BLK-ERROR-210003',
@@ -299,7 +357,9 @@ class Api {
 	 *
 	 * @return bool
 	 */
-	private function check_new_param_alias( $code ) {
+	private function check_new_param_alias(
+		$code
+	) {
 
 		$array = [
 			'BLK-ERROR-210002',
@@ -312,9 +372,13 @@ class Api {
 	// endregion
 
 	/**
+	 * @param string $id
+	 *
 	 * @return string
 	 */
-	private function getTransactionUrl( $id ) {
+	private function getTransactionUrl(
+		$id
+	) {
 
 		$baseUrl = self::getServiceUrl();
 
@@ -326,6 +390,32 @@ class Api {
 			       . $this->merchantId
 			       . '/'
 			       . self::TRANSACTION
+			       . '/'
+			       . $id;
+		}
+
+		return '';
+	}
+
+	/**
+	 * @param string $id
+	 *
+	 * @return string
+	 */
+	private function getPaymentLinkUrl(
+		$id
+	) {
+
+		$baseUrl = self::getServiceUrl();
+
+		if ( $baseUrl ) {
+			return $baseUrl
+			       . '/'
+			       . self::MERCHANT
+			       . '/'
+			       . $this->merchantId
+			       . '/'
+			       . self::PAYMENT
 			       . '/'
 			       . $id;
 		}
@@ -356,6 +446,7 @@ class Api {
 	 * @param string $customerFirstName
 	 * @param string $customerLastName
 	 * @param string $customerEmail
+	 * @param string $notificationUrl
 	 * @param string $type
 	 * @param string $clientIp
 	 * @param string $blikCode
@@ -382,15 +473,17 @@ class Api {
 		$type = 'sale',
 		$clientIp = '',
 		$blikCode = '',
-		$address = [],
+		array $address = array(),
 		$cid = '',
-		$invoice = [],
+		array $invoice = array(),
 		$installmentsPeriod = 0,
 		$version = ''
 	) {
 
 		if ( ! $clientIp ) {
-			$clientIp = $_SERVER['REMOTE_ADDR'];
+			$clientIp = isset( $_SERVER['REMOTE_ADDR'] )
+				? $_SERVER['REMOTE_ADDR']
+				: '';
 		}
 
 		$array = [
@@ -427,7 +520,7 @@ class Api {
 		}
 
 		if ( $cid ) {
-			$array['customer']['cid'] = (string) $cid;
+			$array['customer']['cid'] = $cid;
 		}
 
 		if ( $invoice ) {
@@ -435,7 +528,7 @@ class Api {
 		}
 
 		if ( $installmentsPeriod ) {
-			$array['installment']['period'] = (int) $installmentsPeriod;
+			$array['installment']['period'] = $installmentsPeriod;
 		}
 
 		return json_encode( $array );
@@ -451,8 +544,9 @@ class Api {
 	 * @param string $customerFirstName
 	 * @param string $customerLastName
 	 * @param string $customerEmail
+	 * @param string $notificationUrl
 	 * @param string $phone
-	 * @param string $visibleMethod
+	 * @param array  $visibleMethod
 	 * @param array  $cart
 	 * @param array  $invoice
 	 * @param string $preselectMethodCode
@@ -539,10 +633,16 @@ class Api {
 
 	/**
 	 * @param string $body
+	 * @param string $url
+	 * @param string $method
 	 *
 	 * @return array
 	 */
-	public function createTransaction( $body, $url = '', $method = '' ) {
+	public function createTransaction(
+		$body,
+		$url = '',
+		$method = ''
+	) {
 		if ( ! $url ) {
 			$url = $this->getTransactionCreateUrl();
 		}
@@ -559,10 +659,16 @@ class Api {
 
 	/**
 	 * @param string $body
+	 * @param string $url
+	 * @param string $method
 	 *
 	 * @return array
 	 */
-	public function createPaymentLink( $body, $url = '', $method = '' ) {
+	public function createPaymentLink(
+		$body,
+		$url = '',
+		$method = ''
+	) {
 		if ( ! $url ) {
 			$url = $this->getPaymentLinkCreateUrl();
 		}
@@ -618,12 +724,16 @@ class Api {
 	}
 
 	/**
+	 * @param int $timeout
+	 *
 	 * @return array
 	 */
-	public function getServiceInfo() {
+	public function getServiceInfo( $timeout = 0 ) {
 		return $this->call(
 			$this->getServiceInfoUrl(),
-			Util::METHOD_REQUEST_GET
+			Util::METHOD_REQUEST_GET,
+			'',
+			$timeout
 		);
 	}
 
@@ -650,11 +760,93 @@ class Api {
 	}
 
 	/**
+	 * @param array $serviceIds
+	 *
+	 * @return array
+	 */
+	public function rotateAuth(
+		array $serviceIds
+	) {
+
+		return $this->call(
+			$this->getAuthRotateUrl(),
+			Util::METHOD_REQUEST_POST,
+			json_encode( [
+				'services' => array_values( array_unique( $serviceIds ) ),
+			] )
+		);
+	}
+
+	/**
+	 * @param array $result
+	 * @param array $serviceIds
+	 *
+	 * @return array
+	 */
+	public static function parseRotatedCredentials(
+		array $result,
+		array $serviceIds
+	) {
+
+		if ( empty( $result['success'] )
+		     || empty( $result['body']['token'] )
+		     || ! is_string( $result['body']['token'] ) ) {
+
+			return [];
+		}
+
+		$services = ( isset( $result['body']['services'] ) && is_array( $result['body']['services'] ) )
+			? $result['body']['services']
+			: [];
+
+		$serviceKeys = [];
+
+		foreach ( $serviceIds as $serviceId ) {
+
+			if ( isset( $services[ $serviceId ] )
+			     && is_string( $services[ $serviceId ] )
+			     && $services[ $serviceId ] ) {
+
+				$serviceKeys[ $serviceId ] = $services[ $serviceId ];
+			}
+		}
+
+		return [
+			'authorizationToken' => $result['body']['token'],
+			'serviceKeys'        => $serviceKeys,
+		];
+	}
+
+	/**
+	 * @return string
+	 */
+	private function getAuthRotateUrl() {
+
+		$baseUrl = self::getServiceUrl();
+
+		if ( $baseUrl ) {
+			return $baseUrl
+			       . '/'
+			       . self::MERCHANT
+			       . '/'
+			       . $this->merchantId
+			       . '/'
+			       . self::AUTH
+			       . '/'
+			       . self::ROTATE;
+		}
+
+		return '';
+	}
+
+	/**
 	 * @param string $cid
 	 *
 	 * @return array
 	 */
-	public function getBlikProfileList( $cid ) {
+	public function getBlikProfileList(
+		$cid
+	) {
 
 		return $this->call(
 			$this->getProfileBlikUrl( $cid ),
@@ -667,7 +859,9 @@ class Api {
 	 *
 	 * @return string
 	 */
-	private function getProfileBlikUrl( $cid ) {
+	private function getProfileBlikUrl(
+		$cid
+	) {
 
 		$baseUrl = $this->getServiceUrl();
 
@@ -693,10 +887,14 @@ class Api {
 
 	/**
 	 * @param string $body
+	 * @param string $transactionUuid
 	 *
 	 * @return array
 	 */
-	public function createRefund( $body, $transactionUuid ) {
+	public function createRefund(
+		$body,
+		$transactionUuid
+	) {
 
 		return $this->call(
 			$this->getRefundCreateUrl( $transactionUuid ),
@@ -710,7 +908,9 @@ class Api {
 	 *
 	 * @return string
 	 */
-	private function getRefundCreateUrl( $transactionUuid ) {
+	private function getRefundCreateUrl(
+		$transactionUuid
+	) {
 
 		$baseUrl = $this->getServiceUrl();
 
@@ -741,11 +941,16 @@ class Api {
 	 * @return string
 	 * @throws Exception
 	 */
-	public function buildOrderForm( $transaction, $submitValue = '', $submitClass = '', $submitStyle = '' ) {
+	public function buildOrderForm(
+		array $transaction,
+		$submitValue = '',
+		$submitClass = '',
+		$submitStyle = ''
+	) {
 
 		if ( ! isset( $transaction['body']['action'] ) ) {
 
-			return false;
+			return '';
 		}
 
 		return Util::createOrderForm(
@@ -763,7 +968,9 @@ class Api {
 	 *
 	 * @return array
 	 */
-	public static function parseStringToArray( $transaction ) {
+	public static function parseStringToArray(
+		array $transaction
+	) {
 
 		$array = [];
 
@@ -835,12 +1042,17 @@ class Api {
 	/**
 	 * @param array  $paymentMethods
 	 * @param string $paymentMethod
+	 * @param string $paymentMethodCode
 	 *
 	 * @return array
 	 */
-	public function getPaymentChannelInServiceAndVerify( $paymentMethods, $paymentMethod, $paymentMethodCode ) {
+	public function getPaymentChannelInServiceAndVerify(
+		array $paymentMethods,
+		$paymentMethod,
+		$paymentMethodCode
+	) {
 
-		if ( ! is_array( $paymentMethods ) ) {
+		if ( ! $paymentMethods ) {
 			return [];
 		}
 
@@ -859,18 +1071,23 @@ class Api {
 	}
 
 	/**
-	 * @param array  $imojeService
-	 * @param number $total
+	 * @param array  $ImojeService
+	 * @param string $pm
+	 * @param int    $total
 	 *
 	 * @return bool
 	 */
-	public function getPaymentMethodAvailable( $imojeService, $pm, $total ) {
+	public function getPaymentMethodAvailable(
+		array $ImojeService,
+		$pm,
+		$total
+	) {
 
-		if ( empty( $imojeService['paymentMethods'] ) ) {
+		if ( empty( $ImojeService['paymentMethods'] ) ) {
 			return false;
 		}
 
-		foreach ( $imojeService['paymentMethods'] as $payment_method ) {
+		foreach ( $ImojeService['paymentMethods'] as $payment_method ) {
 			if ( $payment_method['paymentMethod'] === $pm
 			     && $payment_method['isActive']
 			     && $payment_method['isOnline']
@@ -885,20 +1102,25 @@ class Api {
 	}
 
 	/**
-	 * @param array  $imojeService
+	 * @param array  $ImojeService
 	 * @param string $pm
 	 * @param string $pmc
-	 * @param number $total
+	 * @param int    $total
 	 *
 	 * @return bool
 	 */
-	public function getPaymentMethodChannelAvailable( $imojeService, $pm, $pmc, $total ) {
+	public function getPaymentMethodChannelAvailable(
+		array $ImojeService,
+		$pm,
+		$pmc,
+		$total
+	) {
 
-		if ( empty( $imojeService['paymentMethods'] ) ) {
+		if ( empty( $ImojeService['paymentMethods'] ) ) {
 			return false;
 		}
 
-		foreach ( $imojeService['paymentMethods'] as $payment_method ) {
+		foreach ( $ImojeService['paymentMethods'] as $payment_method ) {
 
 			if ( $payment_method['paymentMethod'] === $pm
 			     && $payment_method['paymentMethodCode'] === $pmc
@@ -915,12 +1137,15 @@ class Api {
 	}
 
 	/**
-	 * @param array  $transactionLimits
-	 * @param number $total
+	 * @param array $transactionLimits
+	 * @param int   $total
 	 *
 	 * @return bool
 	 */
-	public function verifyTransactionLimits( $transactionLimits, $total ) {
+	public function verifyTransactionLimits(
+		array $transactionLimits,
+		$total
+	) {
 
 		$isMaxValue = isset( $transactionLimits['maxTransaction']['value'] ) && $transactionLimits['maxTransaction']['value'];
 		$isMinValue = isset( $transactionLimits['minTransaction']['value'] ) && $transactionLimits['minTransaction']['value'];

@@ -2,12 +2,15 @@
 /*
 Plugin Name: imoje
 Plugin URI: https://imoje.pl
-Description: Add payment via imoje to WooCommerce
-Version: 4.15.3
+Description: Add payment via imoje to WooCommerce.
+Version: 4.16.0
 Author: imoje <kontakt.tech@imoje.pl>
 Author URI: https://imoje.pl
 Text Domain: imoje
+Requires PHP: 5.6
+Requires Plugins: woocommerce
 License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,6 +23,8 @@ use Imoje\Payment\Util;
 use Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils;
 
 const WOOCOMMERCE_IMOJE_PLUGIN_FILE_DIR = __FILE__;
+
+
 define( 'WOOCOMMERCE_IMOJE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WOOCOMMERCE_IMOJE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
@@ -39,19 +44,27 @@ function imoje_init_woocommerce_gateway() {
 	if ( file_exists( $pathToAutoload ) ) {
 		include_once $pathToAutoload;
 	} else {
-		include_once __DIR__ . "/includes/libs/Payment-core/vendor/autoload.php";
+		include_once __DIR__ . "/includes/libs/payment-core/vendor/autoload.php";
 	}
 
-	@include_once __DIR__ . "/includes/Imoje_Helper.php";
+	@include_once __DIR__ . "/includes/INGPay_Helper.php";
 
 	load_plugin_textdomain( 'imoje', false, dirname( plugin_basename( __FILE__ ) ) . '/langs/' );
 
-	require_once( 'includes/gateway/WC_Gateway_Imoje_Abstract.php' );
-	require_once( 'includes/gateway/WC_Gateway_Imoje_Api_Abstract.php' );
-	require_once( 'includes/gateway_block/WC_Gateway_Imoje_RestApi_Blocks.php' );
+	require_once( 'includes/gateway/WC_Gateway_INGPay_Abstract.php' );
+	require_once( 'includes/gateway/WC_Gateway_INGPay_Api_Abstract.php' );
 
 	foreach ( imoje_get_gateways() as $method ) {
 		require_once( sprintf( 'includes/gateway/%1$s.php', $method ) );
+	}
+
+	if ( class_exists( '\Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+
+		require_once( 'includes/gateway_block/WC_Gateway_INGPay_Abstract_Blocks.php' );
+
+		foreach ( imoje_get_gateway_block_classes() as $block_class ) {
+			require_once( sprintf( 'includes/gateway_block/%1$s.php', $block_class ) );
+		}
 	}
 
 	add_action( 'before_woocommerce_init', function () {
@@ -64,9 +77,32 @@ function imoje_init_woocommerce_gateway() {
 
 	if ( class_exists( '\Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils' ) && CartCheckoutUtils::is_checkout_block_default() ) {
 		add_action( 'woocommerce_blocks_payment_method_type_registration', function ( $payment_method_registry ) {
-			$payment_method_registry->register( new WC_Gateway_Imoje_RestApi_Blocks() );
+			foreach ( imoje_get_gateway_block_classes() as $block_class ) {
+				$payment_method_registry->register( new $block_class() );
+			}
 		} );
 	}
+}
+
+/**
+ * @return string[]
+ */
+function imoje_get_gateway_block_classes() {
+
+	$prefix = 'WC_Gateway_';
+
+	return [
+		$prefix . 'INGPay_Blocks',
+		$prefix . 'INGPayBlik_Blocks',
+		$prefix . 'INGPayCards_Blocks',
+		$prefix . 'INGPayInstallments_Blocks',
+		$prefix . 'INGPayLeasenow_Blocks',
+		$prefix . 'INGPayPaylater_Blocks',
+		$prefix . 'INGPayPbl_Blocks',
+		$prefix . 'INGPayVisa_Blocks',
+		$prefix . 'INGPayWallet_Blocks',
+		$prefix . 'INGPayWt_Blocks',
+	];
 }
 
 /**
@@ -77,16 +113,16 @@ function imoje_get_gateways() {
 	$prefix = 'WC_Gateway_';
 
 	return [
-		$prefix . 'ImojeBlik',
-		$prefix . 'Imoje',
-		$prefix . 'ImojePaylater',
-		$prefix . 'ImojeCards',
-		$prefix . 'ImojePbl',
-		$prefix . 'ImojeVisa',
-		$prefix . 'ImojeInstallments',
-		$prefix . 'ImojeWallet',
-		$prefix . 'ImojeLeasenow',
-		$prefix . 'ImojeWt',
+		$prefix . 'INGPayBlik',
+		$prefix . 'INGPay',
+		$prefix . 'INGPayPaylater',
+		$prefix . 'INGPayCards',
+		$prefix . 'INGPayPbl',
+		$prefix . 'INGPayVisa',
+		$prefix . 'INGPayInstallments',
+		$prefix . 'INGPayWallet',
+		$prefix . 'INGPayLeasenow',
+		$prefix . 'INGPayWt',
 	];
 }
 
@@ -95,7 +131,7 @@ function imoje_get_gateways() {
  *
  * @return array
  */
-function imoje_add_gateways( $methods ) {
+function imoje_add_gateways( array $methods ) {
 
 	foreach ( imoje_get_gateways() as $method ) {
 		$methods[] = $method;
@@ -115,20 +151,48 @@ add_action( 'wp_ajax_nopriv_imoje_check_transaction', 'imoje_check_transaction_a
  */
 function imoje_check_transaction_ajax() {
 
-	if ( ! isset( $_REQUEST['transaction_uuid'] ) || ! $_REQUEST['transaction_uuid']
-	     || ! isset( $_REQUEST['method'] ) || ! $_REQUEST['method']
+	if ( ! check_ajax_referer( 'imoje_ajax_nonce', 'imoje_nonce', false ) ) {
+		wp_send_json_error();
+	}
+
+	if ( empty( $_REQUEST['transaction_uuid'] )
+	     || empty( $_REQUEST['method'] )
+	     || empty( $_REQUEST['order_id'] )
 	) {
 
 		wp_send_json_error();
 	}
 
-	$imoje_api = imoje_get_api_instance( sanitize_text_field( $_REQUEST['method'] ) );
+	$order = wc_get_order( absint( $_REQUEST['order_id'] ) );
+
+	if ( ! $order ) {
+		wp_send_json_error();
+	}
+
+	$request_order_key = isset( $_REQUEST['order_key'] )
+		? wc_clean( wp_unslash( $_REQUEST['order_key'] ) )
+		: '';
+
+	if ( ! $request_order_key || ! hash_equals( $order->get_order_key(), $request_order_key ) ) {
+		wp_send_json_error();
+	}
+
+	$request_transaction_uuid = sanitize_text_field( wp_unslash( $_REQUEST['transaction_uuid'] ) );
+	$order_transaction_uuid   = (string) $order->get_meta( 'imoje_transaction_uuid' );
+
+	if ( ! $order_transaction_uuid
+	     || ! hash_equals( $order_transaction_uuid, $request_transaction_uuid ) ) {
+
+		wp_send_json_error();
+	}
+
+	$imoje_api = imoje_get_api_instance( sanitize_text_field( wp_unslash( $_REQUEST['method'] ) ) );
 
 	if ( ! $imoje_api ) {
 		wp_send_json_error();
 	}
 
-	$transaction = $imoje_api->getTransaction( sanitize_text_field( $_REQUEST['transaction_uuid'] ) );
+	$transaction = $imoje_api->getTransaction( $order_transaction_uuid );
 
 	if ( $transaction['success'] ) {
 		wp_send_json_success( imoje_prepare_success_response( $transaction ) );
@@ -139,17 +203,19 @@ function imoje_check_transaction_ajax() {
 
 // endregion
 
+/*
 // region create transaction
 add_action( 'wp_ajax_imoje_create_transaction', 'imoje_create_transaction_ajax' );
 add_action( 'wp_ajax_nopriv_imoje_create_transaction', 'imoje_create_transaction_ajax' );
 
-/**
- * @return void
- */
+// @return void
 function imoje_create_transaction_ajax() {
 
-	if ( ( ! isset( $_REQUEST['method'] ) && ! $_REQUEST['method'] )
-	     || ( ! isset( $_REQUEST['order_id'] ) && ! $_REQUEST['order_id'] ) ) {
+	if ( ! check_ajax_referer( 'imoje_ajax_nonce', 'imoje_nonce', false ) ) {
+		wp_send_json_error();
+	}
+
+	if ( empty( $_REQUEST['method'] ) || empty( $_REQUEST['order_id'] ) ) {
 		wp_send_json_error();
 	}
 
@@ -167,16 +233,28 @@ function imoje_create_transaction_ajax() {
 			wp_send_json_error();
 		}
 
-		$blik_code = $_REQUEST['code'];
+		$blik_code = sanitize_text_field( wp_unslash( $_REQUEST['code'] ) );
 	}
 
-	$order = wc_get_order( sanitize_text_field( $_REQUEST['order_id'] ) );
+	$order = wc_get_order( absint( $_REQUEST['order_id'] ) );
 
 	if ( ! $order ) {
 		wp_send_json_error();
 	}
 
-	$request_method = sanitize_text_field( $_REQUEST['method'] );
+	$request_order_key = isset( $_REQUEST['order_key'] )
+		? wc_clean( wp_unslash( $_REQUEST['order_key'] ) )
+		: '';
+
+	if ( ! $request_order_key || ! hash_equals( $order->get_order_key(), $request_order_key ) ) {
+		wp_send_json_error();
+	}
+
+	if ( ! $order->needs_payment() ) {
+		wp_send_json_error();
+	}
+
+	$request_method = sanitize_text_field( wp_unslash( $_REQUEST['method'] ) );
 
 	$imoje_api = imoje_get_api_instance( $request_method );
 
@@ -191,25 +269,30 @@ function imoje_create_transaction_ajax() {
 
 	if ( $blik_code ) {
 		$payment_method      = Util::getPaymentMethod( 'blik' );
-		$payment_method_code = Util::getPaymentMethodCode( 'blik' );
+		$payment_method_code = 'blik';
 
 		$is_remember_blik_code = isset( $_REQUEST['remember_blik_code'] ) && $_REQUEST['remember_blik_code'];
 
 		if ( $is_remember_blik_code ) {
-			$payment_method_code = Util::getPaymentMethodCode( 'blik_oneclick' );
+			$payment_method_code = 'blik_oneclick';
 		}
 
 		if ( $is_remember_blik_code && $is_code
 		     && isset( $_REQUEST['profile_id'] ) && $_REQUEST['profile_id'] ) {
 
-			$request_order_id = sanitize_text_field( $_REQUEST['order_id'] );
+			$request_order_id = $order->get_id();
+
+			$client_ip = isset( $_SERVER['REMOTE_ADDR'] )
+				? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) )
+				: '';
+
 			$transaction_body = $imoje_api->prepareBlikOneclickData(
-				sanitize_text_field( $_REQUEST['profile_id'] ),
+				sanitize_text_field( wp_unslash( $_REQUEST['profile_id'] ) ),
 				$order->get_total(),
 				$order->get_currency(),
 				$request_order_id,
 				$request_order_id,
-				sanitize_text_field( $_SERVER['REMOTE_ADDR'] ),
+				$client_ip,
 				'',
 				$blik_code
 			);
@@ -226,7 +309,20 @@ function imoje_create_transaction_ajax() {
 
 	if ( ! $transaction_body ) {
 
-		$options          = imoje_get_options( $request_method );
+		$options = imoje_get_options( $request_method );
+
+		if ( ! $options ) {
+			wp_send_json_error();
+		}
+
+		$ing_ksiegowosc = isset( $options['ing_ksiegowosc'] )
+			? $options['ing_ksiegowosc']
+			: 'no';
+
+		$ing_ksiegowosc_meta_tax = isset( $options['ing_ksiegowosc_meta_tax'] )
+			? $options['ing_ksiegowosc_meta_tax']
+			: '';
+
 		$transaction_body = $imoje_api->prepareData(
 			$order->get_total(),
 			$order->get_currency(),
@@ -238,15 +334,15 @@ function imoje_create_transaction_ajax() {
 			$order->get_billing_first_name(),
 			$order->get_billing_last_name(),
 			$order->get_billing_email(),
-			WC_Gateway_Imoje::get_notification_url(),
+			WC_Gateway_INGPay::get_notification_url(),
 			Api::TRANSACTION_TYPE_SALE,
 			'',
 			$blik_code,
-			'',
+			[],
 			$cid,
-			Imoje_Helper::get_invoice( $order, $options['ing_ksiegowosc'], true, $options['ing_ksiegowosc_meta_tax'] ),
+			INGPay_Helper::get_invoice( $order, $ing_ksiegowosc, $ing_ksiegowosc_meta_tax ),
 			'',
-			Imoje_Helper::get_version()
+			INGPay_Helper::get_version()
 		);
 	}
 
@@ -257,27 +353,27 @@ function imoje_create_transaction_ajax() {
 		wp_send_json_success( imoje_prepare_success_response( $transaction ) );
 	}
 
-	if ( isset( $transaction['data']['body'] ) && $transaction['data']['body'] ) {
-
-		wc_get_logger()->error(
-			__( 'Transaction could not be initialized, error: ', 'imoje' ) . json_encode( $transaction['data']['body'] ), [
-			'source' => 'imoje',
-		] );
-	}
+	wc_get_logger()->error(
+		__( 'Transaction could not be initialized, error: ', 'imoje' ) . INGPay_Helper::format_api_error( $transaction ), [
+		'source' => 'imoje',
+	] );
 
 	wp_send_json_error();
 }
 
 // endregion
+*/
 
+/*
 // region deactivate alias
 add_action( 'wp_ajax_imoje_deactivate_alias', 'imoje_deactivate_alias' );
 add_action( 'wp_ajax_nopriv_imoje_deactivate_alias', 'imoje_deactivate_alias' );
 
-/**
- * @return void
- */
 function imoje_deactivate_alias() {
+
+	if ( ! check_ajax_referer( 'imoje_ajax_nonce', 'imoje_nonce', false ) ) {
+		wp_send_json_error();
+	}
 
 	if (
 		( ! isset( $_REQUEST['method'] ) && ! $_REQUEST['method'] )
@@ -315,9 +411,6 @@ function imoje_deactivate_alias() {
 add_action( 'wp_ajax_imoje_debit_alias', 'imoje_debit_alias' );
 add_action( 'wp_ajax_nopriv_imoje_debit_alias', 'imoje_debit_alias' );
 
-/**
- * @return void
- */
 function imoje_debit_alias() {
 
 	if (
@@ -364,9 +457,12 @@ function imoje_debit_alias() {
 }
 
 // endregion
+*/
+
+// endregion BLIK oneclick alias
 
 /**
- * @param $method
+ * @param string $method
  *
  * @return false|Api
  */
@@ -375,18 +471,22 @@ function imoje_get_api_instance( $method ) {
 	$options = imoje_get_options( $method );
 
 	if ( ! $options
-	     || ! $options['authorization_token']
-	     || ! $options['merchant_id']
-	     || ! $options['service_id']
+	     || empty( $options['authorization_token'] )
+	     || empty( $options['merchant_id'] )
+	     || empty( $options['service_id'] )
 	) {
 		return false;
 	}
+
+	$sandbox = isset( $options['sandbox'] )
+		? $options['sandbox']
+		: 'no';
 
 	return new Api(
 		$options['authorization_token'],
 		$options['merchant_id'],
 		$options['service_id'],
-		Imoje_Helper::check_is_config_value_selected( $options['sandbox'] )
+		INGPay_Helper::check_is_config_value_selected( $sandbox )
 			? Util::ENVIRONMENT_SANDBOX
 			: Util::ENVIRONMENT_PRODUCTION
 	);
@@ -397,7 +497,7 @@ function imoje_get_api_instance( $method ) {
  *
  * @return array
  */
-function imoje_prepare_success_response( $transaction ) {
+function imoje_prepare_success_response( array $transaction ) {
 
 	$array = [
 		'transaction' => [
@@ -422,11 +522,37 @@ function imoje_prepare_success_response( $transaction ) {
 }
 
 /**
- * @return array
+ * @return string[]
+ */
+function imoje_get_gateway_ids() {
+
+	$ids = [];
+
+	foreach ( imoje_get_gateways() as $class ) {
+		if ( defined( $class . '::PAYMENT_METHOD_NAME' ) ) {
+			$ids[] = constant( $class . '::PAYMENT_METHOD_NAME' );
+		}
+	}
+
+	return $ids;
+}
+
+/**
+ * @param string $method
+ *
+ * @return array|false
  */
 function imoje_get_options( $method ) {
 
-	return get_option( 'woocommerce_' . $method . '_settings' );
+	if ( ! is_string( $method ) || ! in_array( $method, imoje_get_gateway_ids(), true ) ) {
+		return false;
+	}
+
+	$options = get_option( 'woocommerce_' . $method . '_settings' );
+
+	return is_array( $options )
+		? $options
+		: false;
 }
 
 // region blik
@@ -509,49 +635,6 @@ function imoje_get_error_message( $code ) {
 }
 // endregion
 
-add_action( 'updated_option', 'imoje_leasenow_updated_settings', 10, 3 );
-
-/**
- * @param string $option
- * @param mixed  $old_value
- * @param mixed  $value
- *
- * @return void
- */
-function imoje_leasenow_updated_settings( $option, $old_value, $value ) {
-
-
-	if ( $option !== 'woocommerce_imoje_leasenow_settings' ) {
-
-		return;
-	}
-
-	$api = new Api( $value['authorization_token'], $value['merchant_id'], $value['service_id'], $value['sandbox'] === "no"
-		? Util::ENVIRONMENT_PRODUCTION
-		: Util::ENVIRONMENT_SANDBOX );
-
-	$serviceInfo = $api->getServiceInfo();
-
-	if ( ! $serviceInfo['success'] ) {
-
-		wp_admin_notice( __( 'Inserted invalid credentials', 'imoje' ), [ 'type' => 'error', 'dismissible' => true ] );
-
-		return;
-	}
-
-	$serviceInfo = $serviceInfo['body'];
-
-	// save for leasenow amount to compare product price
-	foreach ( $serviceInfo['service']['paymentMethods'] as $paymentMethod ) {
-		if ( $paymentMethod['paymentMethodCode'] === Util::getPaymentMethodCode( 'lease_now' ) && $paymentMethod['currency'] === 'PLN' ) {
-
-			$value['product_min_amount'] = $paymentMethod['transactionLimits']['minTransaction']['value'];
-
-			update_option( 'woocommerce_imoje_leasenow_settings', $value );
-		}
-	}
-}
-
 // display button on a product list
 add_action( 'woocommerce_after_shop_loop_item_title', 'imoje_leasenow_woocommerce_after_shop_loop_item_title' );
 
@@ -562,14 +645,14 @@ add_action( 'woocommerce_after_add_to_cart_form', 'imoje_leasenow_woocommerce_af
  * @return void
  */
 function imoje_leasenow_woocommerce_after_shop_loop_item_title() {
-	imoje_leasenow_load_template_leasenow_button( 'image_scale_list' );
+	imoje_leasenow_load_template_lease_button( 'image_scale_list' );
 }
 
 /**
  * @return void
  */
 function imoje_leasenow_woocommerce_after_add_to_cart_form() {
-	imoje_leasenow_load_template_leasenow_button( 'image_scale_product' );
+	imoje_leasenow_load_template_lease_button( 'image_scale_product' );
 }
 
 /**
@@ -577,11 +660,11 @@ function imoje_leasenow_woocommerce_after_add_to_cart_form() {
  *
  * @return void
  */
-function imoje_leasenow_load_template_leasenow_button( $scale_option_name ) {
+function imoje_leasenow_load_template_lease_button( $scale_option_name ) {
 
-	$plugin_options = imoje_get_options( 'imoje_leasenow' );
+	$plugin_options = imoje_get_options( WC_Gateway_INGPayLeasenow::PAYMENT_METHOD_NAME );
 
-	if ( ! isset( $plugin_options['product_min_amount'] ) ) {
+	if ( ! isset( $plugin_options['product_min_amount'], $plugin_options[ $scale_option_name ] ) ) {
 		return;
 	}
 
@@ -591,16 +674,21 @@ function imoje_leasenow_load_template_leasenow_button( $scale_option_name ) {
 		return;
 	}
 
-	/** @var WC_Product $product */
 	global $product;
 
-	if ( Util::convertAmountToFractional( $product->get_price() ) < $plugin_options['product_min_amount'] ) {
+	// the hooks this runs on are also fired by themes outside of a product context
+	if ( ! $product instanceof WC_Product ) {
 		return;
 	}
 
-	global $wp_query;
+	if ( Util::convertAmountToFractional( $product->get_price() ) < (int) $plugin_options['product_min_amount'] ) {
+		return;
+	}
 
-	$wp_query->query_vars['leasenow_image_scale'] = $image_scale;
-
-	load_template( WOOCOMMERCE_IMOJE_PLUGIN_DIR . 'includes/templates/leasenow_button.php', false );
+	load_template(
+		WOOCOMMERCE_IMOJE_PLUGIN_DIR . 'includes/templates/leasenow_button.php',
+		false,
+		[ 'lease_image_scale' => $image_scale ]
+	);
 }
+

@@ -7,19 +7,12 @@ namespace Imoje\Payment;
  *
  * @package Imoje\Payment
  */
-class CartData
-{
-
-	const TYPE_SCHEMA_ITEMS = 'cartDataItems';
-	const TYPE_SCHEMA_ADDRESS = 'cartDataAddress';
-	const TYPE_SCHEMA_DISCOUNT = 'cartDataDiscount';
-	const TYPE_SCHEMA_SHIPPING = 'cartDataShipping';
-	const MAX_PREVIOUS_ORDERS = 3;
+class CartData {
 
 	/**
 	 * @var array
 	 */
-	private $items;
+	public $items;
 
 	/**
 	 * @var array
@@ -29,12 +22,12 @@ class CartData
 	/**
 	 * @var int
 	 */
-	private $createdAt;
+	public $createdAt;
 
 	/**
 	 * @var int
 	 */
-	private $amount;
+	public $amount;
 
 	/**
 	 * @var array
@@ -44,17 +37,12 @@ class CartData
 	/**
 	 * @var array
 	 */
-	private $shipping = [];
+	private $shipping = array();
 
 	/**
 	 * @var array
 	 */
-	private $discount = [];
-
-	/**
-	 * @var CartData[]
-	 */
-	private $previous = [];
+	private $discount = array();
 
 	/**
 	 * @var string
@@ -64,16 +52,7 @@ class CartData
 	/**
 	 * @return array
 	 */
-	public function getItems()
-	{
-		return $this->items;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getShipping()
-	{
+	public function getShipping() {
 		return $this->shipping;
 	}
 
@@ -88,17 +67,16 @@ class CartData
 	 * @return string
 	 */
 	public function getBasis() {
-
 		return $this->basisForVatExemption;
 	}
 
 	/**
-	 * @param mixed $id
-	 * @param mixed $vat
-	 * @param mixed $name
-	 * @param mixed $amount
-	 * @param mixed $quantity
-	 * @param mixed $isUnitPrice
+	 * @param string $id
+	 * @param int    $vat
+	 * @param string $name
+	 * @param int    $amount
+	 * @param int    $quantity
+	 * @param bool   $isUnitPrice
 	 *
 	 * @return void
 	 */
@@ -111,22 +89,22 @@ class CartData
 		$isUnitPrice
 	) {
 
-		if($isUnitPrice) {
+		if ( $isUnitPrice ) {
 
 			$this->items[] = [
 				'id'       => $id,
 				'vat'      => $vat,
 				'name'     => $name,
 				'amount'   => $amount,
-				'quantity' => (int) $quantity,
+				'quantity' => $quantity,
 			];
 
 			return;
 		}
 
-		$amountCalc = floor($amount / $quantity);
+		$amountCalc = floor( $amount / $quantity );
 
-		if((float) $amount !== ($amountCalc * $quantity)) {
+		if ( (float) $amount !== ( $amountCalc * $quantity ) ) {
 
 			$quantityCalc = $amount % $quantity;
 
@@ -146,7 +124,7 @@ class CartData
 			'vat'      => $vat,
 			'name'     => $name,
 			'amount'   => $amountCalc,
-			'quantity' => (int) $quantity,
+			'quantity' => $quantity,
 		];
 	}
 
@@ -157,9 +135,11 @@ class CartData
 	 *
 	 * @return void
 	 */
-	public function setDiscount($vat, $name, $amount)
-	{
-
+	public function setDiscount(
+		$vat,
+		$name,
+		$amount
+	) {
 		$this->discount = [
 			'vat'    => $vat,
 			'name'   => $name,
@@ -168,57 +148,23 @@ class CartData
 	}
 
 	/**
-	 * @param CartData $previousOrder
-	 *
-	 * @return void
-	 */
-	public function addPrevious($previousOrder)
-	{
-
-		if(count($this->previous) === self::MAX_PREVIOUS_ORDERS) {
-			return;
-		}
-
-		$this->previous[] = $previousOrder;
-	}
-
-	/**
 	 * @param int    $vat
 	 * @param string $name
 	 * @param int    $amount
 	 *
 	 * @return void
 	 */
-	public function setShipping($vat, $name, $amount)
-	{
+	public function setShipping(
+		$vat,
+		$name,
+		$amount
+	) {
 
 		$this->shipping = [
 			'vat'    => $vat,
 			'name'   => $name,
 			'amount' => $amount,
 		];
-	}
-
-	/**
-	 * @param int $amount
-	 *
-	 * @return void
-	 */
-	public function setAmount($amount)
-	{
-
-		$this->amount = $amount;
-	}
-
-	/**
-	 * @param int $createdAt
-	 *
-	 * @return void
-	 */
-	public function setCreatedAt($createdAt)
-	{
-
-		$this->createdAt = $createdAt;
 	}
 
 	/**
@@ -232,8 +178,15 @@ class CartData
 	 *
 	 * @return void
 	 */
-	public function setAddressBilling($city, $name, $phone, $street, $country, $postalCode, $vatNumber = '')
-	{
+	public function setAddressBilling(
+		$city,
+		$name,
+		$phone,
+		$street,
+		$country,
+		$postalCode,
+		$vatNumber = ''
+	) {
 
 		$this->addressBilling = $this->commonPrepareAddress(
 			$city,
@@ -257,18 +210,25 @@ class CartData
 	 *
 	 * @return array
 	 */
-	private function commonPrepareAddress($city, $name, $phone, $street, $country, $postalCode, $vatNumber = '')
-	{
+	private function commonPrepareAddress(
+		$city,
+		$name,
+		$phone,
+		$street,
+		$country,
+		$postalCode,
+		$vatNumber = ''
+	) {
 		$array = [
 			'city'       => $city,
 			'name'       => $name,
-			'phone'      => (string) $phone,
+			'phone'      => $phone,
 			'street'     => $street,
 			'country'    => $country,
-			'postalCode' => (string) $postalCode,
+			'postalCode' => $postalCode,
 		];
 
-		if($vatNumber) {
+		if ( $vatNumber ) {
 			$array['vatNumber'] = $vatNumber;
 		}
 
@@ -286,8 +246,15 @@ class CartData
 	 *
 	 * @return void
 	 */
-	public function setAddressDelivery($city, $name, $phone, $street, $country, $postalCode, $vatNumber = '')
-	{
+	public function setAddressDelivery(
+		$city,
+		$name,
+		$phone,
+		$street,
+		$country,
+		$postalCode,
+		$vatNumber = ''
+	) {
 		$this->addressDelivery = $this->commonPrepareAddress(
 			$city,
 			$name,
@@ -302,8 +269,7 @@ class CartData
 	/**
 	 * @return array
 	 */
-	public function prepareCartDataArray()
-	{
+	public function prepareCartDataArray() {
 
 		$data = [
 			'address' => [
@@ -313,53 +279,20 @@ class CartData
 			'items'   => $this->items,
 		];
 
-		if(!empty($this->discount)) {
+		if ( ! empty( $this->discount ) ) {
 			$data['discount'] = $this->discount;
 		}
 
-		if(!empty($this->shipping)) {
+		if ( ! empty( $this->shipping ) ) {
 			$data['shipping'] = $this->shipping;
 		}
 
-		if(!empty($this->createdAt)) {
+		if ( ! empty( $this->createdAt ) ) {
 			$data['createdAt'] = $this->createdAt;
 		}
 
-		if(!empty($this->amount)) {
+		if ( ! empty( $this->amount ) ) {
 			$data['amount'] = $this->amount;
-		}
-
-		return $data;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function prepareCartData()
-	{
-
-		$cartData = $this->prepareCartDataArray();
-
-		//if(!empty($this->previous)) {
-		//	$cartData['previous'] = $this->preparePrevious($this->previous);
-		//}
-
-		return base64_encode(gzencode(json_encode($cartData), 5));
-	}
-
-	/**
-	 * @param CartData[] $cartDataList
-	 *
-	 * @return array
-	 */
-	private function preparePrevious($cartDataList)
-	{
-
-		$data = [];
-
-		foreach($cartDataList as $cartData) {
-
-			$data[] = $cartData->prepareCartDataArray();
 		}
 
 		return $data;
@@ -370,9 +303,10 @@ class CartData
 	 *
 	 * @return void
 	 */
-	public function setBasis( $basis ) {
+	public function setBasis(
+		$basis
+	) {
 
 		$this->basisForVatExemption = $basis;
-
 	}
 }

@@ -62,7 +62,9 @@ class LeaseNow {
 			'name'       => $name,
 			'amount'     => $amount,
 			'tax'        => $tax,
-			'taxStake'   => $taxStake,
+			'taxStake'   => is_numeric( $taxStake )
+				? (int) $taxStake
+				: $taxStake,
 			'quantity'   => $quantity,
 			'url'        => $url,
 		];
@@ -92,17 +94,11 @@ class LeaseNow {
 	}
 
 	/**
-	 * @param bool $isApi
-	 *
-	 * @return array|string
+	 * @return array
 	 */
-	public function prepare( $isApi ) {
-		$data = [
+	public function prepare() {
+		return [
 			'items' => $this->items,
 		];
-
-		return $isApi
-			? $data
-			: base64_encode( gzencode( json_encode( $data ), 5 ) );
 	}
 }

@@ -1,37 +1,30 @@
-function registerImojeLeasenowPaymentMethod() {
-	const ImojeLeasenowPaymentElement = React.createElement(
+( function () {
+
+	const data = wc.wcSettings.getSetting( 'imoje_leasenow_data' );
+	const { containerClass, headerClass, isEnabled, canMakePayment } = window.imojeBlock;
+
+	const element = React.createElement(
 		'div',
-		{
-			class: imojePaymentMethodContainerClass,
-		},
+		{ class: containerClass },
 		React.createElement(
 			'div',
-			{
-				class: `${imojePaymentMethodContainerClass}__title`,
-			},
-			imoje_leasenow_js_object.settings_leasenow.description,
-		),
+			{ class: `${ containerClass }__title` },
+			data.settings.description
+		)
 	);
 
-	wc.wcBlocksRegistry.registerPaymentMethod({
-		name:           imoje_leasenow_js_object.name_leasenow,
+	wc.wcBlocksRegistry.registerPaymentMethod( {
+		name:           data.name,
 		label:          React.createElement(
 			'span',
-			{
-				class: imojeBlockCheckoutHeaderClass,
-			},
-			imoje_leasenow_js_object.settings_leasenow.title,
-			imoje_leasenow_js_object.logo_leasenow && !isEnabled(imoje_leasenow_js_object.settings_leasenow.hide_brand) &&
-			React.createElement('img', {
-				src: imoje_leasenow_js_object.logo_leasenow,
-				alt: imoje_leasenow_js_object.name_leasenow,
-			}),
+			{ class: headerClass },
+			data.settings.title,
+			data.logo && ! isEnabled( data.settings.hide_brand ) &&
+			React.createElement( 'img', { src: data.logo, alt: data.name } )
 		),
-		ariaLabel:      imoje_leasenow_js_object.name_leasenow,
-		edit:           ImojeLeasenowPaymentElement,
-		content:        ImojeLeasenowPaymentElement,
-		canMakePayment: imojeCanMakePayment(imoje_leasenow_js_object.settings_leasenow),
-	});
-}
-
-registerImojeLeasenowPaymentMethod();
+		ariaLabel:      data.name,
+		edit:           element,
+		content:        element,
+		canMakePayment: canMakePayment( data ),
+	} );
+} )();

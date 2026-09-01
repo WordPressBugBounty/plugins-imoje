@@ -4,11 +4,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/** @var array $payment_method_list_active */
-/** @var array $payment_method_list_no_active */
-/** @var bool $is_blik */
+/** @var array $args */
 
-$payment_method_list = array_merge( $payment_method_list_active, $payment_method_list_no_active );
+$is_blik = ! empty( $args['is_blik'] );
+
+$payment_method_list = array_merge(
+	isset( $args['payment_method_list_active'] ) ? (array) $args['payment_method_list_active'] : [],
+	isset( $args['payment_method_list_no_active'] ) ? (array) $args['payment_method_list_no_active'] : []
+);
 
 ?>
 
@@ -20,7 +23,6 @@ $payment_method_list = array_merge( $payment_method_list_active, $payment_method
 
 	<ul class="imoje-channels">
 		<?php
-
 		foreach ( $payment_method_list as $payment_method ) { ?>
 
 			<li class="imoje-channel imoje-channel-<?php echo esc_attr( $payment_method['payment_method_code'] ) ?> imoje-c-<?php echo $payment_method['is_available']
@@ -43,14 +45,14 @@ $payment_method_list = array_merge( $payment_method_list_active, $payment_method
 
 					    $need_extra = $payment_method['limit'] === 1;
 
-					    $payment_method_title = Imoje_Helper::get_tooltip_payment_channel( $payment_method );
+					    $payment_method_title = INGPay_Helper::get_tooltip_payment_channel( $payment_method );
 				    }
 			    }
 
 			    echo esc_attr( $payment_method_title );
 
 			    $input_value     = $payment_method['payment_method'] . '-' . $payment_method['payment_method_code'];
-			    $is_default_blik = $payment_method['is_available'] && $is_blik && $input_value = 'blik-blik';
+			    $is_default_blik = $payment_method['is_available'] && $is_blik && $input_value == 'blik-blik';
 			    ?>">
 				<label class="imoje-c-<?php echo $payment_method['is_available']
 					? 'active'

@@ -4,15 +4,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/** @var int $leasenow_image_scale */
+/** @var array $args */
 
-$leasenowImageScale = isset( $leasenow_image_scale ) && $leasenow_image_scale
-	? esc_html( $leasenow_image_scale )
-	: "50";
+$imoje_lease_image_scale = ( isset( $args['lease_image_scale'] ) && $args['lease_image_scale'] )
+	? (int) $args['lease_image_scale']
+	: 50;
 
 ?>
 
-<div class="leasenow_button-content">
-	<img width="<?php echo $leasenowImageScale; ?>%" alt="ING Lease Now" class="leasenow_button-image" src="<?php echo esc_html( WOOCOMMERCE_IMOJE_PLUGIN_URL . 'assets/images/leasenow_button.png' ); ?>">
+<div class="lease_button-content">
+	<img width="<?php echo esc_attr( $imoje_lease_image_scale ); ?>%" alt="ING Lease Now" class="lease_button-image" src="<?php echo esc_url( WOOCOMMERCE_IMOJE_PLUGIN_URL . 'assets/images/leasenow_button.png' ); ?>">
 </div>
 
