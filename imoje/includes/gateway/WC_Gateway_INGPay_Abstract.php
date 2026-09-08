@@ -43,10 +43,12 @@ abstract class WC_Gateway_INGPay_Abstract extends WC_Payment_Gateway {
 			'process_admin_options',
 		] );
 
-		add_action( 'woocommerce_api_' . strtolower( get_class( $this ) ), [
-			$this,
-			'process_notification',
-		] );
+		foreach ( $this->get_notification_endpoints() as $endpoint ) {
+			add_action( 'woocommerce_api_' . $endpoint, [
+				$this,
+				'process_notification',
+			] );
+		}
 
 		add_action( 'wp_enqueue_scripts', [
 			$this,
@@ -61,6 +63,38 @@ abstract class WC_Gateway_INGPay_Abstract extends WC_Payment_Gateway {
 			'check_available_payment_gateways',
 		] );
 		// endregion
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function get_notification_endpoints() {
+
+		$current = strtolower( get_class( $this ) );
+
+		$suffix = str_replace( WC_Gateway_INGPay::PAYMENT_METHOD_NAME, '', $this->payment_method_name );
+
+		$legacy_suffixes = [
+			'_leasenow' => '_lease',
+		];
+
+		$suffixes = [ $suffix ];
+
+		if ( isset( $legacy_suffixes[ $suffix ] ) ) {
+			$suffixes[] = $legacy_suffixes[ $suffix ];
+		}
+
+		$endpoints = [
+			$current,
+			str_replace( 'ingpay', 'imoje', $current ),
+		];
+
+		foreach ( $suffixes as $legacy_suffix ) {
+			$endpoints[] = 'wc_gateway_ingpay' . $legacy_suffix;
+			$endpoints[] = 'wc_gateway_imoje' . $legacy_suffix;
+		}
+
+		return array_values( array_unique( $endpoints ) );
 	}
 
 	/**
@@ -470,16 +504,6 @@ abstract class WC_Gateway_INGPay_Abstract extends WC_Payment_Gateway {
 				exit();
 			}
 
-			if ( ! $this->verify_api( 'transaction',
-				$refund_uuid,
-				$refund_amount,
-				$order_data['currency'],
-				$result_check_request_notification['transaction']['status'],
-				Notification::TRT_REFUND ) ) {
-				echo $notification->formatResponse( Notification::NS_OK, Notification::NC_DOUBLE_VERIFICATION_FAILED );
-				exit();
-			}
-
 			$remaining_to_refund = Util::convertAmountToFractional( $order_data['total'] )
 			                       - Util::convertAmountToFractional( $order->get_total_refunded() );
 
@@ -552,15 +576,6 @@ abstract class WC_Gateway_INGPay_Abstract extends WC_Payment_Gateway {
 		if ( ! isset( $transactionStatuses[ $result_check_request_notification['payment']['status'] ] ) ) {
 			echo $notification->formatResponse( Notification::NS_ERROR, Notification::NC_UNHANDLED_STATUS );
 			exit;
-		}
-
-		if ( ! $this->verify_api( 'payment',
-			$result_check_request_notification['payment']['id'],
-			Util::convertAmountToFractional( $order_data['total'] ),
-			$order_data['currency'],
-			$result_check_request_notification['payment']['status'] ) ) {
-			echo $notification->formatResponse( Notification::NS_OK, Notification::NC_DOUBLE_VERIFICATION_FAILED );
-			exit();
 		}
 
 		switch ( $result_check_request_notification['payment']['status'] ) {
@@ -710,83 +725,6 @@ abstract class WC_Gateway_INGPay_Abstract extends WC_Payment_Gateway {
 			false,
 			[ 'imoje_unavailable_message' => $text ]
 		);
-	}
-
-
-	/**
-	 * @param string $type payment or transaction
-	 * @param string $id
-	 * @param int    $expected_amount
-	 * @param string $expected_currency
-	 * @param string $expected_status
-	 * @param string $expected_type
-	 *
-	 * @return bool
-	 */
-	protected function verify_api( $type, $id, $expected_amount, $expected_currency, $expected_status, $expected_type = '' ) {
-
-		$api = new Api(
-			$this->get_option( 'authorization_token' ),
-			$this->get_option( 'merchant_id' ),
-			$this->get_option( 'service_id' ),
-			$this->sandbox
-				? Util::ENVIRONMENT_SANDBOX
-				: Util::ENVIRONMENT_PRODUCTION
-		);
-
-
-		if ( $type === 'transaction' ) {
-			$result        = $api->getTransaction( $id );
-			$error_message = __( 'imoje ipn could not fetch transaction from API: ', 'imoje' );
-			$body          = isset( $result['body']['transaction'] ) ? $result['body']['transaction'] : [];
-		} else {
-			$result        = $api->getPaymentLink( $id );
-			$error_message = __( 'imoje ipn could not fetch payment link from API: ', 'imoje' );
-			$body          = $result['body'];
-		}
-
-		if ( empty( $result['success'] ) ) {
-			$this->log_verification_error(
-				$error_message . INGPay_Helper::format_api_error( $result )
-			);
-
-			return false;
-		}	
-
-		$checks = [
-			'status'   => [ $expected_status, 'value' ],
-			'currency' => [ $expected_currency, 'value' ],
-		];
-
-		if ( $expected_amount !== 0 ) {
-			$checks['amount'] = [ $expected_amount, 'int' ];
-		}
-
-		if ( $expected_type !== '' ) {
-			$checks['type'] = [ $expected_type, 'value' ];
-		}
-
-
-		foreach ( $checks as $field => $config ) {
-			list( $expected, $cast ) = $config;
-
-			$actual = isset( $body[ $field ] )
-				? ( $cast === 'int' ? (int) $body[ $field ] : $body[ $field ] )
-				: null;
-
-			if ( $actual !== $expected ) {
-				$this->log_verification_error( sprintf(
-					__( 'imoje ipn %s mismatch. Expected: %s, got: %s', 'imoje' ),
-					$field,
-					$expected,
-					$actual === null ? 'null' : $actual
-				) );
-
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	/**

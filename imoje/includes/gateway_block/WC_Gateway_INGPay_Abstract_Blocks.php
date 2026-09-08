@@ -104,6 +104,10 @@ class WC_Gateway_INGPay_Abstract_Blocks extends AbstractPaymentMethodType {
 		$hide_brand = isset( $settings['hide_brand'] ) && $settings['hide_brand'] === 'yes';
 		$logo = $hide_brand ? '' : $this->get_image_src( $this->name . '.' . INGPay_Helper::get_logo_ext($this->name) );
 
+		$extra_data = INGPay_Helper::is_checkout_context()
+			? $this->extra_data()
+			: [];
+
 		return array_merge(
 			[
 				'name'                  => $this->name,
@@ -113,7 +117,7 @@ class WC_Gateway_INGPay_Abstract_Blocks extends AbstractPaymentMethodType {
 				'choose_payment_method' => __( 'Choose a payment method', 'imoje' ),
 				'ajax_nonce'            => wp_create_nonce( 'imoje_ajax_nonce' ),
 			],
-			$this->extra_data()
+			$extra_data
 		);
 	}
 

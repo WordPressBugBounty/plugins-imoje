@@ -607,6 +607,22 @@ class INGPay_Helper {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public static function is_checkout_context() {
+
+		if ( ! function_exists( 'is_checkout' ) || wp_doing_cron() ) {
+			return false;
+		}
+
+		if ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) {
+			return false;
+		}
+
+		return is_checkout();
+	}
+
+	/**
 	 * @return array
 	 */
 	public static function get_payment_methods_for_payment_link() {

@@ -1,11 +1,11 @@
 === imoje ===
 Contributors: imoje
 Tags: imoje, woocommerce, payments, payment gateway, checkout
-Tested up to: 7.0.4
+Tested up to: 7.1.0
 Requires PHP: 5.6.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
-Stable tag: 4.16.0
+Stable tag: 4.16.1
 
 Add payment via ING Pay (imoje) to WooCommerce
 
@@ -70,6 +70,10 @@ This situation is usually caused by not choosing currency in the plugin configur
 4. Payment methods available on the paywall
 
 == Changelog ==
+= 4.16.1 =
+* remove redundant calls to ING Pay API
+* improve notifications - support for surcharges
+* support for legacy endpoints
 = 4.16.0 =
 * updated the logos, text and instructions relating to the rebranding of imoje to ING Pay
 * optimised the plugin’s internal mechanisms

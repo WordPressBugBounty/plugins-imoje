@@ -844,7 +844,7 @@ abstract class WC_Gateway_INGPay_Api_Abstract extends WC_Gateway_INGPay_Abstract
 	 */
 	protected function prepare_payment_methods_block_checkout( array $payment_method_name ) {
 
-		if (!WC()->cart) {
+		if ( ! WC()->cart || ! INGPay_Helper::is_checkout_context() ) {
 			return [];
 		}
 
